@@ -1,0 +1,288 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://tests/firestore/firestore.gd" type="Script" id=1]
+[ext_resource path="res://assets/buttons/normal_button.png" type="Texture" id=2]
+[ext_resource path="res://assets/background.png" type="Texture" id=3]
+[ext_resource path="res://fonts/PermanentMarker_30.tres" type="DynamicFont" id=4]
+[ext_resource path="res://assets/buttons/normal_button.tscn" type="PackedScene" id=5]
+[ext_resource path="res://assets/buttons/normal_button_disabled.png" type="Texture" id=6]
+[ext_resource path="res://assets/buttons/normal_button.gd" type="Script" id=7]
+[ext_resource path="res://fonts/PermanentMarker.ttf" type="DynamicFontData" id=8]
+[ext_resource path="res://fonts/PermanentMarker_18.tres" type="DynamicFont" id=9]
+
+
+[sub_resource type="DynamicFont" id=1]
+size = 23
+font_data = ExtResource( 8 )
+
+[node name="firestore" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="background" type="TextureRect" parent="."]
+margin_left = 5.59372
+margin_top = 2.00226
+margin_right = 1029.59
+margin_bottom = 602.002
+texture = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="title" type="Label" parent="."]
+margin_left = 376.0
+margin_top = 11.8108
+margin_right = 557.0
+margin_bottom = 55.8108
+custom_fonts/font = ExtResource( 4 )
+text = "Firestore Tests"
+align = 1
+uppercase = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="back" parent="." instance=ExtResource( 5 )]
+margin_right = 190.354
+margin_bottom = 44.6465
+label = "Back"
+
+[node name="test_firestore" type="TextureButton" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_top = 65.0
+margin_right = 190.0
+margin_bottom = 110.0
+texture_normal = ExtResource( 2 )
+texture_disabled = ExtResource( 6 )
+script = ExtResource( 7 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+label = "Test Firestore"
+
+[node name="label" type="RichTextLabel" parent="test_firestore"]
+margin_left = 10.0
+margin_right = 180.0
+margin_bottom = 45.0
+mouse_filter = 2
+custom_fonts/normal_font = SubResource( 1 )
+bbcode_enabled = true
+fit_content_height = true
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="console" type="RichTextLabel" parent="."]
+margin_left = 249.251
+margin_top = 117.012
+margin_right = 945.251
+margin_bottom = 522.012
+bbcode_enabled = true
+scroll_following = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="login_check" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 131.0
+margin_right = 34.0
+margin_bottom = 155.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="login_check"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Login"
+
+[node name="add_document" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 155.0
+margin_right = 34.0
+margin_bottom = 179.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="add_document"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Add Document"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="get_document" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 180.0
+margin_right = 34.0
+margin_bottom = 204.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="get_document"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Get Document"
+
+[node name="print_document" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 203.0
+margin_right = 34.0
+margin_bottom = 227.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="print_document"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Print Document"
+
+[node name="update_document" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 224.0
+margin_right = 34.0
+margin_bottom = 248.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="update_document"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Update Document"
+
+[node name="get_document_2" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 246.0
+margin_right = 34.0
+margin_bottom = 270.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="get_document_2"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Get Document"
+
+[node name="print_document_2" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 266.0
+margin_right = 34.0
+margin_bottom = 290.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="print_document_2"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Print Document"
+
+[node name="delete_document" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 285.0
+margin_right = 34.0
+margin_bottom = 309.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="delete_document"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Delete Document"
+
+[node name="run_query" type="CheckBox" parent="." groups=[
+"tests",
+]]
+margin_left = 10.0
+margin_top = 309.0
+margin_right = 34.0
+margin_bottom = 333.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="run_query"]
+margin_left = 26.0596
+margin_top = -3.06488
+margin_right = 76.0596
+margin_bottom = 22.9351
+custom_fonts/font = ExtResource( 9 )
+text = "Run Query"
+
+[connection signal="pressed" from="back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="test_firestore" to="." method="_on_test_firestore_pressed"]

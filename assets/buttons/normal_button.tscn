@@ -1,0 +1,32 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://assets/buttons/normal_button.gd" type="Script" id=1]
+[ext_resource path="res://assets/buttons/normal_button.png" type="Texture" id=2]
+[ext_resource path="res://fonts/PermanentMarker_30.tres" type="DynamicFont" id=3]
+[ext_resource path="res://assets/buttons/normal_button_disabled.png" type="Texture" id=4]
+
+[node name="normal_button" type="TextureButton"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = 0.353546
+margin_top = -0.353546
+margin_right = -529.646
+margin_bottom = -1235.35
+texture_normal = ExtResource( 2 )
+texture_disabled = ExtResource( 4 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="label" type="RichTextLabel" parent="."]
+margin_left = 10.0
+margin_right = 180.0
+margin_bottom = 45.0
+mouse_filter = 2
+custom_fonts/normal_font = ExtResource( 3 )
+bbcode_enabled = true
+fit_content_height = true
+__meta__ = {
+"_edit_lock_": true
+}
