@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/icon.svg-5c4f39d37c9275a3768de73a392fd315.stex"
+path="res://.import/normal_button.png-ff8611367b0648c5279d2e5c5e41a090.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://addons/godot-firebase/icon.svg"
-dest_files=[ "res://.import/icon.svg-5c4f39d37c9275a3768de73a392fd315.stex" ]
+source_file="res://assets/buttons/normal_button.png"
+dest_files=[ "res://.import/normal_button.png-ff8611367b0648c5279d2e5c5e41a090.stex" ]
 
 [params]
 

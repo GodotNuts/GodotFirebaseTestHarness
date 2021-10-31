@@ -117,7 +117,16 @@ _global_script_class_icons={
 [application]
 
 config/name="FirebaseTestHarness"
+run/main_scene="res://main.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+Firebase="*res://addons/godot-firebase/firebase/firebase.tscn"
+
+[editor_plugins]
+
+enabled=PoolStringArray( "res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg" )
 
 [physics]
 
