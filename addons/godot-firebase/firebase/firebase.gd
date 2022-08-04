@@ -6,13 +6,14 @@
 ## 	- [code]Database[/code]: A NonSQL realtime database for managing data in JSON structures.
 ## 	- [code]Firestore[/code]: Similar to Database, but stores data in collections and documents, among other things.
 ## 	- [code]Storage[/code]: Gives access to Cloud Storage; perfect for storing files like images and other assets.
-## 
+##
 ## @tutorial https://github.com/GodotNuts/GodotFirebase/wiki
 tool
 extends Node
 
 const _ENVIRONMENT_VARIABLES : String = "firebase/environment_variables"
 const _EMULATORS_PORTS : String = "firebase/emulators/ports"
+const _AUTH_PROVIDERS : String = "firebase/auth_providers"
 
 ## @type FirebaseAuth
 ## The Firebase Authentication API.
@@ -65,8 +66,19 @@ var _config : Dictionary = {
             "functions" : "",
             "storage" : "",
             "dynamicLinks" : ""
-           }
-       }
+        }
+    },
+    "workarounds":{
+        "database_connection_closed_issue": false, # fixes https://github.com/firebase/firebase-tools/issues/3329
+    },
+    "auth_providers": {
+        "facebook_id":"",
+        "facebook_secret":"",
+        "github_id":"",
+        "github_secret":"",
+        "twitter_id":"",
+        "twitter_secret":""
+    }
 }
 
 func _ready() -> void:
@@ -87,14 +99,17 @@ func _check_emulating() -> void:
 func _load_config() -> void:
     if _config.apiKey != "" and _config.authDomain != "":
         pass
-    else:    
+    else:
         var env = ConfigFile.new()
         var err = env.load("res://addons/godot-firebase/.env")
         if err == OK:
-            for key in _config.keys(): 
+            for key in _config.keys():
                 if key == "emulators":
                     for port in _config[key]["ports"].keys():
                         _config[key]["ports"][port] = env.get_value(_EMULATORS_PORTS, port, "")
+                if key == "auth_providers":
+                    for provider in _config[key].keys():
+                        _config[key][provider] = env.get_value(_AUTH_PROVIDERS, provider)
                 else:
                     var value : String = env.get_value(_ENVIRONMENT_VARIABLES, key, "")
                     if value == "":
@@ -103,7 +118,7 @@ func _load_config() -> void:
                         _config[key] = value
         else:
             _printerr("Unable to read .env file at path 'res://addons/godot-firebase/.env'")
-    
+
     _setup_modules()
 
 func _setup_modules() -> void:
@@ -115,7 +130,7 @@ func _setup_modules() -> void:
         Auth.connect("signup_succeeded", module, "_on_FirebaseAuth_login_succeeded")
         Auth.connect("token_refresh_succeeded", module, "_on_FirebaseAuth_token_refresh_succeeded")
         Auth.connect("logged_out", module, "_on_FirebaseAuth_logout")
-    
+
 
 # -------------
 
