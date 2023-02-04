@@ -1,146 +1,93 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://cisx4upsu40uj"]
 
-[ext_resource path="res://main.gd" type="Script" id=1]
-[ext_resource path="res://assets/background.png" type="Texture" id=2]
-[ext_resource path="res://icon.png" type="Texture" id=3]
-[ext_resource path="res://assets/buttons/normal_button.tscn" type="PackedScene" id=4]
-[ext_resource path="res://fonts/PermanentMarker_30.tres" type="DynamicFont" id=5]
+[ext_resource type="Script" path="res://main.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://dg74q2h440e5k" path="res://assets/background.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://dw0ssh85ig8c8" path="res://icon.png" id="3"]
+[ext_resource type="PackedScene" path="res://assets/buttons/normal_button.tscn" id="4"]
 
 [node name="main" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="background" type="TextureRect" parent="."]
-margin_right = 1024.0
-margin_bottom = 600.0
-texture = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 1024.0
+offset_bottom = 600.0
+texture = ExtResource("2")
 
 [node name="menu" type="VBoxContainer" parent="."]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_right = 1024.0
-margin_bottom = 600.0
+offset_right = 1024.0
+offset_bottom = 600.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="top" type="VBoxContainer" parent="menu"]
-margin_right = 1024.0
-margin_bottom = 197.0
+layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
 [node name="top1" type="HBoxContainer" parent="menu/top"]
-margin_top = 23.0
-margin_right = 1024.0
-margin_bottom = 174.0
+layout_mode = 2
 alignment = 1
 
 [node name="icon" type="TextureRect" parent="menu/top/top1"]
-margin_left = 436.0
-margin_right = 587.0
-margin_bottom = 151.0
-texture = ExtResource( 3 )
+layout_mode = 2
+texture = ExtResource("3")
 
 [node name="mid" type="VBoxContainer" parent="menu"]
-margin_top = 201.0
-margin_right = 1024.0
-margin_bottom = 398.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="mid1" type="VBoxContainer" parent="menu/mid"]
-margin_right = 1024.0
-margin_bottom = 96.0
+layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
 [node name="HBoxContainer" type="HBoxContainer" parent="menu/mid/mid1"]
-margin_top = 25.0
-margin_right = 1024.0
-margin_bottom = 70.0
+layout_mode = 2
 alignment = 1
 
-[node name="auth_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource( 4 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 223.0
-margin_top = 0.0
-margin_right = 413.0
-margin_bottom = 45.0
+[node name="auth_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource("4")]
+layout_mode = 2
 label = "Auth"
 
-[node name="firestore_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource( 4 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 417.0
-margin_top = 0.0
-margin_right = 607.0
-margin_bottom = 45.0
+[node name="firestore_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource("4")]
+layout_mode = 2
 label = "Firestore"
 
-[node name="dynamiclinks_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource( 4 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 611.0
-margin_top = 0.0
-margin_right = 801.0
-margin_bottom = 45.0
+[node name="dynamiclinks_tests" parent="menu/mid/mid1/HBoxContainer" instance=ExtResource("4")]
+layout_mode = 2
 label = "Links"
 
 [node name="mid2" type="VBoxContainer" parent="menu/mid"]
-margin_top = 100.0
-margin_right = 1024.0
-margin_bottom = 197.0
+layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 
 [node name="HBoxContainer2" type="HBoxContainer" parent="menu/mid/mid2"]
-margin_top = 26.0
-margin_right = 1024.0
-margin_bottom = 71.0
+layout_mode = 2
 alignment = 1
 
-[node name="storage_tests" parent="menu/mid/mid2/HBoxContainer2" instance=ExtResource( 4 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 320.0
-margin_top = 0.0
-margin_right = 510.0
-margin_bottom = 45.0
+[node name="storage_tests" parent="menu/mid/mid2/HBoxContainer2" instance=ExtResource("4")]
+layout_mode = 2
 label = "Storage"
 
-[node name="rtd_tests" parent="menu/mid/mid2/HBoxContainer2" instance=ExtResource( 4 )]
-anchor_right = 0.0
-anchor_bottom = 0.0
-margin_left = 514.0
-margin_top = 0.0
-margin_right = 704.0
-margin_bottom = 45.0
+[node name="rtd_tests" parent="menu/mid/mid2/HBoxContainer2" instance=ExtResource("4")]
+layout_mode = 2
 label = "Database"
 
 [node name="bot" type="VBoxContainer" parent="menu"]
-margin_top = 402.0
-margin_right = 1024.0
-margin_bottom = 600.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="title" type="Label" parent="."]
-margin_left = 40.0
-margin_top = 49.009
-margin_right = 412.0
-margin_bottom = 140.009
-custom_fonts/font = ExtResource( 5 )
+offset_left = 40.0
+offset_top = 49.009
+offset_right = 412.0
+offset_bottom = 140.009
 text = "Godot Firebase Testing Utility"
-align = 1
-autowrap = true
 uppercase = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [connection signal="pressed" from="menu/mid/mid1/HBoxContainer/auth_tests" to="." method="_on_auth_tests_pressed"]
 [connection signal="pressed" from="menu/mid/mid1/HBoxContainer/firestore_tests" to="." method="_on_firestore_tests_pressed"]

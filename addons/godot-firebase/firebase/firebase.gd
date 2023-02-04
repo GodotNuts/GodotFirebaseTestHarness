@@ -8,7 +8,7 @@
 ## 	- [code]Storage[/code]: Gives access to Cloud Storage; perfect for storing files like images and other assets.
 ##
 ## @tutorial https://github.com/GodotNuts/GodotFirebase/wiki
-tool
+@tool
 extends Node
 
 const _ENVIRONMENT_VARIABLES : String = "firebase/environment_variables"
@@ -17,33 +17,33 @@ const _AUTH_PROVIDERS : String = "firebase/auth_providers"
 
 ## @type FirebaseAuth
 ## The Firebase Authentication API.
-onready var Auth : FirebaseAuth = $Auth
+@onready var Auth := $Auth
 
 ## @type FirebaseFirestore
 ## The Firebase Firestore API.
-onready var Firestore : FirebaseFirestore = $Firestore
+@onready var Firestore := $Firestore
 
 ## @type FirebaseDatabase
 ## The Firebase Realtime Database API.
-onready var Database : FirebaseDatabase = $Database
+@onready var Database := $Database
 
 ## @type FirebaseStorage
 ## The Firebase Storage API.
-onready var Storage : FirebaseStorage = $Storage
+@onready var Storage := $Storage
 
 ## @type FirebaseDynamicLinks
 ## The Firebase Dynamic Links API.
-onready var DynamicLinks : FirebaseDynamicLinks = $DynamicLinks
+@onready var DynamicLinks := $DynamicLinks
 
 ## @type FirebaseFunctions
 ## The Firebase Cloud Functions API
-onready var Functions : FirebaseFunctions = $Functions
+@onready var Functions := $Functions
 
-export var emulating : bool = false
+@export var emulating : bool = false
 
 # Configuration used by all files in this project
 # These values can be found in your Firebase Project
-# See the README on Github for how to access
+# See the README checked Github for how to access
 var _config : Dictionary = {
     "apiKey": "",
     "authDomain": "",
@@ -97,19 +97,18 @@ func _check_emulating() -> void:
             module._check_emulating()
 
 func _load_config() -> void:
-    if _config.apiKey != "" and _config.authDomain != "":
-        pass
-    else:
+    if not (_config.apiKey != "" and _config.authDomain != ""):
         var env = ConfigFile.new()
         var err = env.load("res://addons/godot-firebase/.env")
         if err == OK:
             for key in _config.keys():
-                if key == "emulators":
-                    for port in _config[key]["ports"].keys():
-                        _config[key]["ports"][port] = env.get_value(_EMULATORS_PORTS, port, "")
-                if key == "auth_providers":
-                    for provider in _config[key].keys():
-                        _config[key][provider] = env.get_value(_AUTH_PROVIDERS, provider)
+                var config_value = _config[key]
+                if key == "emulators" and config_value.has("ports"):
+                    for port in config_value["ports"].keys():
+                        config_value["ports"][port] = env.get_value(_EMULATORS_PORTS, port, "")
+                if key == "auth_providers" and config_value.has("auth_providers"):
+                    for provider in config_value.keys():
+                        config_value[provider] = env.get_value(_AUTH_PROVIDERS, provider)
                 else:
                     var value : String = env.get_value(_ENVIRONMENT_VARIABLES, key, "")
                     if value == "":
@@ -126,10 +125,10 @@ func _setup_modules() -> void:
         module._set_config(_config)
         if not module.has_method("_on_FirebaseAuth_login_succeeded"):
             continue
-        Auth.connect("login_succeeded", module, "_on_FirebaseAuth_login_succeeded")
-        Auth.connect("signup_succeeded", module, "_on_FirebaseAuth_login_succeeded")
-        Auth.connect("token_refresh_succeeded", module, "_on_FirebaseAuth_token_refresh_succeeded")
-        Auth.connect("logged_out", module, "_on_FirebaseAuth_logout")
+        Auth.login_succeeded.connect(module._on_FirebaseAuth_login_succeeded)
+        Auth.signup_succeeded.connect(module._on_FirebaseAuth_login_succeeded)
+        Auth.token_refresh_succeeded.connect(module._on_FirebaseAuth_token_refresh_succeeded)
+        Auth.logged_out.connect(module._on_FirebaseAuth_logout)
 
 
 # -------------

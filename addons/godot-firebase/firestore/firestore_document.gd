@@ -2,9 +2,9 @@
 ## @meta-version 2.2
 ## A reference to a Firestore Document.
 ## Documentation TODO.
-tool
+@tool
 class_name FirestoreDocument
-extends Reference
+extends RefCounted
 
 # A FirestoreDocument objects that holds all important values for a Firestore Document,
 # @doc_name = name of the Firestore Document, which is the request PATH
@@ -16,7 +16,7 @@ var doc_fields : Dictionary     # only .fields
 var doc_name : String           # only .name
 var create_time : String        # createTime
 
-func _init(doc : Dictionary = {}, _doc_name : String = "", _doc_fields : Dictionary = {}) -> void:
+func _init(doc : Dictionary = {},_doc_name : String = "",_doc_fields : Dictionary = {}):
     self.document = doc
     self.doc_name = doc.name
     if self.doc_name.count("/") > 2:
@@ -25,7 +25,7 @@ func _init(doc : Dictionary = {}, _doc_name : String = "", _doc_fields : Diction
     self.create_time = doc.createTime
 
 # Pass a dictionary { 'key' : 'value' } to format it in a APIs usable .fields
-# Field Path using the "dot" (`.`) notation are supported:
+# Field Path3D using the "dot" (`.`) notation are supported:
 # ex. { "PATH.TO.SUBKEY" : "VALUE" } ==> { "PATH" : { "TO" : { "SUBKEY" : "VALUE" } } }
 static func dict2fields(dict : Dictionary) -> Dictionary:
     var fields : Dictionary = {}
@@ -35,14 +35,14 @@ static func dict2fields(dict : Dictionary) -> Dictionary:
         if "." in field:
             var keys: Array = field.split(".")
             field = keys.pop_front()
-            keys.invert()
+            keys.reverse()
             for key in keys:
                 field_value = { key : field_value }
         match typeof(field_value):
             TYPE_NIL: var_type = "nullValue"
             TYPE_BOOL: var_type = "booleanValue"
             TYPE_INT: var_type = "integerValue"
-            TYPE_REAL: var_type = "doubleValue"
+            TYPE_FLOAT: var_type = "doubleValue"
             TYPE_STRING: var_type = "stringValue"
             TYPE_DICTIONARY:
                 if is_field_timestamp(field_value):
@@ -101,7 +101,7 @@ static func array2fields(array : Array) -> Array:
             TYPE_NIL: var_type = "nullValue"
             TYPE_BOOL: var_type = "booleanValue"
             TYPE_INT: var_type = "integerValue"
-            TYPE_REAL: var_type = "doubleValue"
+            TYPE_FLOAT: var_type = "doubleValue"
             TYPE_STRING: var_type = "stringValue"
             TYPE_ARRAY: var_type = "arrayValue"
 
@@ -134,7 +134,7 @@ static func fields2array(array : Dictionary) -> Array:
             fields.append(item)
     return fields
 
-# Converts a gdscript Dictionary (most likely obtained with OS.get_datetime()) to a Firebase Timestamp
+# Converts a gdscript Dictionary (most likely obtained with Time.get_datetime_dict_from_system()) to a Firebase Timestamp
 static func dict2timestamp(dict : Dictionary) -> String:
     dict.erase('weekday')
     dict.erase('dst')
@@ -144,7 +144,7 @@ static func dict2timestamp(dict : Dictionary) -> String:
 # Converts a Firebase Timestamp back to a gdscript Dictionary
 static func timestamp2dict(timestamp : String) -> Dictionary:
     var datetime : Dictionary = {year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0}
-    var dict : PoolStringArray = timestamp.split("T")[0].split("-")
+    var dict : PackedStringArray = timestamp.split("T")[0].split("-")
     dict.append_array(timestamp.split("T")[1].split(":"))
     for value in dict.size() :
         datetime[datetime.keys()[value]] = int(dict[value])
