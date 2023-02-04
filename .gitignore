@@ -9,3 +9,4 @@ export_presets.cfg
 data_*/
 addons/godot-firebase/.env
 *.DS_Store
+.godot/
