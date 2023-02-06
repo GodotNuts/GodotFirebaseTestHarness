@@ -41,6 +41,10 @@ func _test_error(data) -> void:
     _print_to_console_error(data)
     _test_finished()
 
+func _cleanup_previous_run():
+    var del_task : FirestoreTask = _collection.delete("Document1")
+    _document = await del_task.delete_document
+
 # Function called when login to Firebase has completed successfully
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
     _print_to_console("Login with email and password has worked")
@@ -75,7 +79,7 @@ func _test_firestore() -> void:
     _collection.connect("update_document",Callable(self,"on_document_update"))
     _collection.connect("delete_document",Callable(self,"on_document_delete"))
     _collection.connect("error",Callable(self,"on_document_error"))
-    
+    await _cleanup_previous_run()
     # Add Document1 to Firestore
     _print_to_console("Trying to add a document")
     var add_task : FirestoreTask = _collection.add("Document1", {'name': 'Document1', 'active': 'true'})
@@ -83,8 +87,8 @@ func _test_firestore() -> void:
     $add_document.button_pressed = true
     
     # Get Document1 (Document that has been added from the previous step)
-    _print_to_console("Trying to get 'Document1")
-    _collection.get('Document1')
+    _print_to_console("Trying to get Document1")
+    var get_task = _collection.get_doc('Document1')
     _document = await _collection.get_document
     if(_document == null):
         _test_error("Failed to get document")
@@ -104,8 +108,8 @@ func _test_firestore() -> void:
     $update_document.button_pressed = true
     
     # Get Document1 (With updated that has been added from the previous step)
-    _print_to_console("Trying to get 'Document1")
-    _collection.get('Document1')
+    _print_to_console("Trying to get Document1")
+    _collection.get_doc('Document1')
     _document = await _collection.get_document
     $get_document_2.button_pressed = true
     

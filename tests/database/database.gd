@@ -1,6 +1,11 @@
 extends Node2D
 
 # Script used for testing the Realtime Database functions of the plugin
+signal database_call_completed
+
+# When the data key from the push is ready
+signal data_key_ready
+
 
 # Variables
 @onready var _test_running = false
@@ -73,7 +78,7 @@ func _test_database():
     _print_to_console("\nTrying to push data to the RTD...")
     database_reference.push({'user_name':'username', 'message':'Hello world!'})
     $push_data_check.button_pressed = true
-    await get_tree().create_timer(3).timeout
+    await data_key_ready
     
     # Update data in the RTDB
     _print_to_console("\nTrying to update the DB")
@@ -86,24 +91,28 @@ func _test_database():
 
 # Function called when new data has been added to the RTDB
 func _on_new_data_update(new_data : FirebaseResource):
+    added_data_key = new_data.key
+    data_key_ready.emit()
     _print_to_console(new_data)
     _print_to_console(new_data.key)
     _print_to_console(new_data.data)
-    added_data_key = new_data.key
 
 # Function called when data is patched in the RTDB
 func _on_patch_data_update(patch_data : FirebaseResource):
+    added_data_key = patch_data.key
+    data_key_ready.emit()
     _print_to_console(patch_data)
     _print_to_console(patch_data.key)
     _print_to_console(patch_data.data)
-    added_data_key = patch_data.key
 
 # Function called when pushing data to the RTDB has failed
 func _on_push_failed():
     _print_to_console_error("Push failed")
+    database_call_completed.emit()
 
 # Function called when pushing data to the RTDB is successful
 func _on_push_successful():
+    database_call_completed.emit()
     _print_to_console("Push Successful")
 
 # Function used to print data to the console GUI for the end user

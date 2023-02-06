@@ -66,7 +66,7 @@ func _test_storage():
     # Download image and display it in the GUi for the end user
     _print_to_console("\nTrying to download image and display it...")
     var image = get_image('image.png')
-    await image.task_finished
+    var data = await image.task_finished
     var converted_image = task2image(image)
     $image.texture = converted_image
     $download_image_check.button_pressed = true
@@ -174,10 +174,12 @@ func task2image(task : StorageTask) -> ImageTexture:
         TYPE_PACKED_BYTE_ARRAY:
             var data : PackedByteArray = task.data
             if data.size()>1:
-                match data.slice(0,1).hex_encode():
-                    "ffd8":
+                var image_marker = data.slice(0, 1)
+                var hex = image_marker.hex_encode()
+                match hex:
+                    "ffd8": # I do not know if this has to change as below; we could add a test for this by also uploading/deleting a jpeg
                         new_image.load_jpg_from_buffer(data)
-                    "8950":
+                    "89": # This apparently had to change as we were getting corrupt data
                         new_image.load_png_from_buffer(data)
         TYPE_DICTIONARY:
             _print_to_console_error("ERROR %s: could not find image requested" % task.data.error.code)

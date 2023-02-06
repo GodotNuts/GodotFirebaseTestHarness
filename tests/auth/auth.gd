@@ -55,27 +55,27 @@ func _on_test_auth_pressed() -> void:
         await get_tree().create_timer(_timer_length).timeout
     
     # Start Login test using the first email
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $signup_check.button_pressed = true
         _print_to_console("\nTrying to login...")
         Firebase.Auth.login_with_email_and_password(_email1, _password1)
         await get_tree().create_timer(_timer_length).timeout
     
     # Check Auth File
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $login_check.button_pressed = true
         _check_auth_file()
         await get_tree().create_timer(_timer_length).timeout
     
     # Get User Data Test
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $auth_file_check.button_pressed = true
         _print_to_console("\nTrying to get user data...")
         Firebase.Auth.get_user_data()
         await get_tree().create_timer(_timer_length).timeout
     
     # Change User Password
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $user_data_check.button_pressed = true
         _print_to_console("\nTrying to change user password...")
         Firebase.Auth.change_user_password(_password2)
@@ -86,7 +86,7 @@ func _on_test_auth_pressed() -> void:
         await get_tree().create_timer(_timer_length).timeout
     
     # Change the user email from the first email to the second email
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $change_pass_check.button_pressed = true
         _print_to_console("\nTrying to change user email...")
         Firebase.Auth.change_user_email(_email2)
@@ -97,20 +97,20 @@ func _on_test_auth_pressed() -> void:
         await get_tree().create_timer(_timer_length).timeout
     
     # Login with the new credentials
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $change_email_check.button_pressed = true
         _print_to_console("\nTrying to login with new creds...")
         Firebase.Auth.login_with_email_and_password(_email2, _password2)
         await get_tree().create_timer(_timer_length).timeout
     
     # Start Delete Account test
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $login_check_2.button_pressed = true
         _print_to_console("\nDeleting Account...")
         Firebase.Auth.delete_user_account()
         
     # If nothing has failed to this point, finish the test successfully
-    if not Firebase.Auth.auth.is_empty():
+    if _auth_error != true:
         $delete_check.button_pressed = true
         _print_to_console("\nFINISHED AUTH TESTS")
         _test_finished()
@@ -118,7 +118,7 @@ func _on_test_auth_pressed() -> void:
         _auth_test_error()
 
 func _on_FirebaseAuth_signup_succeeded(_auth) -> void:
-    _print_to_console("Signup with email and password has worked")
+    _print_to_console("Signup has worked")
     _print_to_console("Logging Out...")
     _print_to_console("Ignore this error if there is one, it's normal")
     Firebase.Auth.logout()
@@ -130,7 +130,7 @@ func _on_FirebaseAuth_signup_succeeded(_auth) -> void:
         _print_to_console("No encrypted auth file exists, good to go")
 
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
-    _print_to_console("Login with email and password has worked")
+    _print_to_console("Login has worked")
     Firebase.Auth.save_auth(_auth)
 
 func _check_auth_file() -> void:
