@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "AuthProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/auth_provider.gd"
+}, {
+"base": "AuthProvider",
+"class": "FacebookProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/facebook.gd"
+}, {
 "base": "HTTPRequest",
 "class": "FirebaseAuth",
 "language": "GDScript",
@@ -80,9 +90,24 @@ _global_script_classes=[ {
 "path": "res://addons/godot-firebase/firestore/firestore_task.gd"
 }, {
 "base": "Reference",
+"class": "FirestoreTransaction",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/firestore/firestore_transaction.gd"
+}, {
+"base": "Reference",
 "class": "FunctionTask",
 "language": "GDScript",
 "path": "res://addons/godot-firebase/functions/function_task.gd"
+}, {
+"base": "AuthProvider",
+"class": "GitHubProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/github.gd"
+}, {
+"base": "AuthProvider",
+"class": "GoogleProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/google.gd"
 }, {
 "base": "Reference",
 "class": "StorageReference",
@@ -93,8 +118,15 @@ _global_script_classes=[ {
 "class": "StorageTask",
 "language": "GDScript",
 "path": "res://addons/godot-firebase/storage/storage_task.gd"
+}, {
+"base": "AuthProvider",
+"class": "TwitterProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/twitter.gd"
 } ]
 _global_script_class_icons={
+"AuthProvider": "",
+"FacebookProvider": "",
 "FirebaseAuth": "",
 "FirebaseDatabase": "",
 "FirebaseDatabaseReference": "",
@@ -109,9 +141,13 @@ _global_script_class_icons={
 "FirestoreDocument": "",
 "FirestoreQuery": "",
 "FirestoreTask": "",
+"FirestoreTransaction": "",
 "FunctionTask": "",
+"GitHubProvider": "",
+"GoogleProvider": "",
 "StorageReference": "",
-"StorageTask": ""
+"StorageTask": "",
+"TwitterProvider": ""
 }
 
 [application]
@@ -134,4 +170,5 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+quality/driver/driver_name="GLES2"
 environment/default_environment="res://default_env.tres"

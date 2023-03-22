@@ -10,7 +10,6 @@
 [ext_resource path="res://fonts/PermanentMarker.ttf" type="DynamicFontData" id=8]
 [ext_resource path="res://fonts/PermanentMarker_18.tres" type="DynamicFont" id=9]
 
-
 [sub_resource type="DynamicFont" id=1]
 size = 23
 font_data = ExtResource( 8 )
@@ -83,9 +82,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="login_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="login_check" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 131.0
 margin_right = 34.0
@@ -105,9 +102,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Login"
 
-[node name="add_document" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="add_document" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 155.0
 margin_right = 34.0
@@ -130,9 +125,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="get_document" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="get_document" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 180.0
 margin_right = 34.0
@@ -152,9 +145,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Get Document"
 
-[node name="print_document" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="print_document" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 203.0
 margin_right = 34.0
@@ -174,9 +165,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Print Document"
 
-[node name="update_document" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="update_document" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 224.0
 margin_right = 34.0
@@ -196,9 +185,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Update Document"
 
-[node name="get_document_2" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="get_document_2" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 246.0
 margin_right = 34.0
@@ -218,9 +205,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Get Document"
 
-[node name="print_document_2" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="print_document_2" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 266.0
 margin_right = 34.0
@@ -240,9 +225,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Print Document"
 
-[node name="delete_document" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="delete_document" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 285.0
 margin_right = 34.0
@@ -262,9 +245,7 @@ margin_bottom = 22.9351
 custom_fonts/font = ExtResource( 9 )
 text = "Delete Document"
 
-[node name="run_query" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="run_query" type="CheckBox" parent="." groups=["tests"]]
 margin_left = 10.0
 margin_top = 309.0
 margin_right = 34.0
