@@ -69,10 +69,12 @@ func _test_database():
     
     # Connect to signals needed for testing
     _print_to_console("\nConnecting signals for the RTD...")
-    database_reference.connect("new_data_update",Callable(self,"_on_new_data_update")) # for new data
-    database_reference.connect("patch_data_update",Callable(self,"_on_patch_data_update")) # for patch data
-    database_reference.connect("push_failed",Callable(self,"_on_push_failed"))
-    database_reference.connect("push_successful",Callable(self,"_on_push_successful"))
+    database_reference.connect("new_data_update", _on_new_data_update) # for new data
+    database_reference.connect("patch_data_update", _on_patch_data_update) # for patch data
+    database_reference.connect("push_failed", _on_push_failed)
+    database_reference.connect("push_successful", _on_push_successful)
+    database_reference.connect("once_failed", _on_once_failed)
+    database_reference.connect("once_successful", _on_once_successful)
     
     # Push data to the RTDB
     _print_to_console("\nTrying to push data to the RTD...")
@@ -80,10 +82,20 @@ func _test_database():
     $push_data_check.button_pressed = true
     await data_key_ready
     
-    # Update data in the RTDB
+    # Get data once from the RTDB
+    _print_to_console("\n\nAttempting a once-off get from the RTD")
+    database_reference.once(added_data_key + "/user_name")
+    $once_data_check.button_pressed = true
+    
+        # Update data in the RTDB
     _print_to_console("\nTrying to update the DB")
     database_reference.update(added_data_key, {'user_name':'username', 'message':'Hello world123!'})
     $update_data_check.button_pressed = true
+    
+    # Delete data from the RTDB
+    _print_to_console("\n\nAttempting to delete data from the RTD")
+    database_reference.delete(added_data_key + "/user_name")
+    $delete_data_check.button_pressed = true
     
     # If nothing has failed to this point, finish the test successfully
     _print_to_console("\nFINISHED DATABASE TESTS")
@@ -114,6 +126,17 @@ func _on_push_failed():
 func _on_push_successful():
     database_call_completed.emit()
     _print_to_console("Push Successful")
+    
+# Function called when getting data from the RTDB has failed
+func _on_once_failed():
+    _print_to_console_error("Once failed")
+    database_call_completed.emit()
+
+# Function called when pushing data to the RTDB is successful
+func _on_once_successful(data):
+    database_call_completed.emit()
+    _print_to_console("Once Successful:\n")
+    _print_to_console(data)
 
 # Function used to print data to the console GUI for the end user
 func _print_to_console(data):

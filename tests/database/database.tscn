@@ -125,5 +125,40 @@ offset_right = 76.0596
 offset_bottom = 22.9351
 text = "Update Data"
 
+[node name="once_data_check" type="CheckBox" parent="." groups=["tests"]]
+offset_left = 10.0
+offset_top = 226.0
+offset_right = 34.0
+offset_bottom = 250.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+
+[node name="Label" type="Label" parent="once_data_check"]
+layout_mode = 0
+offset_left = 26.0596
+offset_top = -3.06488
+offset_right = 76.0596
+offset_bottom = 22.9351
+text = "Get Data
+"
+
+[node name="delete_data_check" type="CheckBox" parent="." groups=["tests"]]
+offset_left = 10.0
+offset_top = 247.0
+offset_right = 34.0
+offset_bottom = 271.0
+mouse_filter = 2
+disabled = true
+button_mask = 0
+
+[node name="Label" type="Label" parent="delete_data_check"]
+layout_mode = 0
+offset_left = 26.0596
+offset_top = -3.06488
+offset_right = 76.0596
+offset_bottom = 22.9351
+text = "Delete Data"
+
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]
 [connection signal="pressed" from="test_database" to="." method="_on_test_database_pressed"]
