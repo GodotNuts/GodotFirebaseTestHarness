@@ -18,9 +18,9 @@ const _timer_length = 5
 
 # Function called when the scene is ready
 func _ready():
-	var now:int = Time.get_unix_time_from_system()
-	_email1 = "test_%s@fakeemail.com" % now
-	_email2 = "test2_%s@fakeemail.com" % now
+    var now:int = Time.get_unix_time_from_system()
+    _email1 = "test_%s@fakeemail.com" % now
+    _email2 = "test2_%s@fakeemail.com" % now
     Firebase.Auth.login_succeeded.connect(_on_FirebaseAuth_login_succeeded)
     Firebase.Auth.signup_succeeded.connect(_on_FirebaseAuth_signup_succeeded)
     Firebase.Auth.login_failed.connect(_on_login_failed)
