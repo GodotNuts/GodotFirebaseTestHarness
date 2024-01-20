@@ -6,18 +6,21 @@ extends Node2D
 @onready var _test_running = false
 @onready var console = $console
 var _auth_error = false
+var _email1 : String
+var _email2 : String
 
 signal test_finished()
 
 # Constants
-const _email1 = 'test@fakeemail.com'
-const _email2 = 'test2@fakeemail.com'
 const _password1 = 'ThisPasswordIsAwesome'
 const _password2 = 'ThisPasswordIsStillAwesome'
 const _timer_length = 5
 
 # Function called when the scene is ready
 func _ready():
+    var now:int = Time.get_unix_time_from_system()
+    _email1 = "test_%s@fakeemail.com" % now
+    _email2 = "test2_%s@fakeemail.com" % now
     Firebase.Auth.login_succeeded.connect(_on_FirebaseAuth_login_succeeded)
     Firebase.Auth.signup_succeeded.connect(_on_FirebaseAuth_signup_succeeded)
     Firebase.Auth.login_failed.connect(_on_login_failed)
