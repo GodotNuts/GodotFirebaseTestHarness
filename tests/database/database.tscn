@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://tests/database/database.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://dey7w6ieyntb" path="res://assets/buttons/normal_button.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://dg74q2h440e5k" path="res://assets/background.png" id="3"]
-[ext_resource type="PackedScene" path="res://assets/buttons/normal_button.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://fnf1abx32uum" path="res://assets/buttons/normal_button.tscn" id="5"]
 [ext_resource type="Texture2D" uid="uid://d20ruxpv04p8y" path="res://assets/buttons/normal_button_disabled.png" id="6"]
 [ext_resource type="Script" path="res://assets/buttons/normal_button.gd" id="7"]
 

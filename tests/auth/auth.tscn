@@ -1,42 +1,34 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://cxmrssy30x0qo"]
 
-[ext_resource path="res://tests/auth/auth.gd" type="Script" id=1]
-[ext_resource path="res://assets/buttons/normal_button.tscn" type="PackedScene" id=2]
-[ext_resource path="res://assets/background.png" type="Texture2D" id=3]
-[ext_resource path="res://fonts/PermanentMarker_30.tres" type="FontFile" id=4]
-[ext_resource path="res://fonts/PermanentMarker_18.tres" type="FontFile" id=5]
-
+[ext_resource type="Script" path="res://tests/auth/auth.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://fnf1abx32uum" path="res://assets/buttons/normal_button.tscn" id="2"]
+[ext_resource type="Texture2D" uid="uid://dg74q2h440e5k" path="res://assets/background.png" id="3"]
 
 [node name="auth" type="Node2D"]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="background" type="TextureRect" parent="."]
 offset_right = 1024.0
 offset_bottom = 600.0
-texture = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+texture = ExtResource("3")
 
 [node name="title" type="Label" parent="."]
 offset_left = 376.0
 offset_top = 13.0
 offset_right = 498.0
 offset_bottom = 52.0
-custom_fonts/font = ExtResource( 4 )
 text = "Auth Tests"
-align = 1
+horizontal_alignment = 1
 uppercase = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="back" parent="." instance=ExtResource( 2 )]
+[node name="back" parent="." instance=ExtResource("2")]
+anchors_preset = 15
 offset_right = 190.354
 offset_bottom = 44.6465
 label = "Back"
 
-[node name="test_auth" parent="." instance=ExtResource( 2 )]
+[node name="test_auth" parent="." instance=ExtResource("2")]
+anchors_preset = 15
 offset_left = 0.0
 offset_top = 65.0
 offset_right = 190.0
@@ -50,13 +42,8 @@ offset_right = 946.586
 offset_bottom = 522.012
 bbcode_enabled = true
 scroll_following = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="signup_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="signup_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 131.0
 offset_right = 34.0
@@ -64,21 +51,16 @@ offset_bottom = 155.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="signup_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Signup"
 
-[node name="login_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="login_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 155.0
 offset_right = 34.0
@@ -86,21 +68,16 @@ offset_bottom = 179.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="login_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Login"
 
-[node name="auth_file_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="auth_file_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 179.0
 offset_right = 34.0
@@ -108,21 +85,16 @@ offset_bottom = 203.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="auth_file_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Auth File Check"
 
-[node name="user_data_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="user_data_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 203.0
 offset_right = 34.0
@@ -130,21 +102,16 @@ offset_bottom = 227.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="user_data_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "User Data Check"
 
-[node name="change_pass_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="change_pass_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 227.0
 offset_right = 34.0
@@ -152,21 +119,16 @@ offset_bottom = 251.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="change_pass_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Change Password"
 
-[node name="change_email_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="change_email_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 251.0
 offset_right = 34.0
@@ -174,21 +136,16 @@ offset_bottom = 275.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="change_email_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Change Email"
 
-[node name="login_check_2" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="login_check_2" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 275.0
 offset_right = 34.0
@@ -196,21 +153,16 @@ offset_bottom = 299.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="login_check_2"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Login Again"
 
-[node name="delete_check" type="CheckBox" parent="." groups=[
-"tests",
-]]
+[node name="delete_check" type="CheckBox" parent="." groups=["tests"]]
 offset_left = 10.0
 offset_top = 299.0
 offset_right = 34.0
@@ -218,16 +170,13 @@ offset_bottom = 323.0
 mouse_filter = 2
 disabled = true
 button_mask = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Label" type="Label" parent="delete_check"]
+layout_mode = 0
 offset_left = 26.0596
 offset_top = -3.06488
 offset_right = 76.0596
 offset_bottom = 22.9351
-custom_fonts/font = ExtResource( 5 )
 text = "Delete"
 
 [connection signal="pressed" from="back" to="." method="_on_back_pressed"]

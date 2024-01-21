@@ -12,7 +12,7 @@ config_version=5
 
 config/name="FirebaseTestHarness"
 run/main_scene="res://main.tscn"
-config/features=PackedStringArray("4.2")
+config/features=PackedStringArray("4.3")
 config/icon="res://icon.png"
 
 [autoload]
@@ -29,4 +29,6 @@ common/enable_pause_aware_picking=true
 
 [rendering]
 
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 environment/default_environment="res://default_env.tres"

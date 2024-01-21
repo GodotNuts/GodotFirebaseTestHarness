@@ -12,6 +12,7 @@
 script = ExtResource("3")
 
 [node name="Auth" type="HTTPRequest" parent="."]
+accept_gzip = false
 max_redirects = 12
 timeout = 10.0
 script = ExtResource("4")

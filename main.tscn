@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://main.gd" id="1"]
 [ext_resource type="Texture2D" uid="uid://dg74q2h440e5k" path="res://assets/background.png" id="2"]
 [ext_resource type="Texture2D" uid="uid://dw0ssh85ig8c8" path="res://icon.png" id="3"]
-[ext_resource type="PackedScene" path="res://assets/buttons/normal_button.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://fnf1abx32uum" path="res://assets/buttons/normal_button.tscn" id="4"]
 
 [node name="main" type="Node2D"]
 script = ExtResource("1")
