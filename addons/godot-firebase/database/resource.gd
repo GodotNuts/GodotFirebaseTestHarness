@@ -1,14 +1,14 @@
 ## @meta-authors SIsilicon, fenix-hub
 ## @meta-version 2.2
 ## A generic resource used by Firebase Database.
-tool
+@tool
 class_name FirebaseResource
 extends Resource
 
 var key : String
 var data
 
-func _init(key : String, data) -> void:
+func _init(key : String,data):
     self.key = key.lstrip("/")
     self.data = data
 
