@@ -22,13 +22,11 @@ horizontal_alignment = 1
 uppercase = true
 
 [node name="back" parent="." instance=ExtResource("2")]
-anchors_preset = 15
 offset_right = 190.354
 offset_bottom = 44.6465
 label = "Back"
 
 [node name="test_auth" parent="." instance=ExtResource("2")]
-anchors_preset = 15
 offset_left = 0.0
 offset_top = 65.0
 offset_right = 190.0

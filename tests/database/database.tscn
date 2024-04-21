@@ -24,7 +24,6 @@ text = "Database Tests"
 uppercase = true
 
 [node name="back" parent="." instance=ExtResource("5")]
-anchors_preset = 15
 offset_right = 190.354
 offset_bottom = 44.6465
 label = "Back"
