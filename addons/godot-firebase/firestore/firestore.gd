@@ -114,7 +114,6 @@ func collection(path : String) -> FirestoreCollection:
 		coll._config = _config
 		coll.auth = auth
 		coll.collection_name = path
-		coll.firestore = self
 		collections[path] = coll
 		return coll
 	else:

@@ -15,20 +15,25 @@ var document : Dictionary       # the Document itself
 var doc_fields : Dictionary     # only .fields
 var doc_name : String           # only .name
 var create_time : String        # createTime
+var _transforms : FieldTransformArray     # The transforms to apply
 
 func _init(doc : Dictionary = {},_doc_name : String = "",_doc_fields : Dictionary = {}):
-	self.document = doc
-	self.doc_name = doc.name
-	if self.doc_name.count("/") > 2:
-		self.doc_name = (self.doc_name.split("/") as Array).back()
-	self.doc_fields = fields2dict(self.document)
+	_transforms = FieldTransformArray.new()
+	
+	document = doc
+	doc_name = doc.name
+	if doc_name.count("/") > 2:
+		doc_name = (doc_name.split("/") as Array).back()
+		
+	doc_fields = fields2dict(self.document)
+
 	self.create_time = doc.createTime
 
 # Pass a dictionary { 'key' : 'value' } to format it in a APIs usable .fields
 # Field Path3D using the "dot" (`.`) notation are supported:
 # ex. { "PATH.TO.SUBKEY" : "VALUE" } ==> { "PATH" : { "TO" : { "SUBKEY" : "VALUE" } } }
 static func dict2fields(dict : Dictionary) -> Dictionary:
-	var fields : Dictionary = {}
+	var fields = {}
 	var var_type : String = ""
 	for field in dict.keys():
 		var field_value = dict[field]
@@ -38,6 +43,7 @@ static func dict2fields(dict : Dictionary) -> Dictionary:
 			keys.reverse()
 			for key in keys:
 				field_value = { key : field_value }
+		
 		match typeof(field_value):
 			TYPE_NIL: var_type = "nullValue"
 			TYPE_BOOL: var_type = "booleanValue"
@@ -54,35 +60,48 @@ static func dict2fields(dict : Dictionary) -> Dictionary:
 			TYPE_ARRAY:
 				var_type = "arrayValue"
 				field_value = {"values": array2fields(field_value)}
-
+				
 		if fields.has(field) and fields[field].has("mapValue") and field_value.has("fields"):
 			for key in field_value["fields"].keys():
 				fields[field]["mapValue"]["fields"][key] = field_value["fields"][key]
 		else:
 			fields[field] = { var_type : field_value }
+		
 	return {'fields' : fields}
+	
+func add_field_transform(transform : FieldTransform) -> void:
+	_transforms.push_back(transform)
+
+func remove_field(field_path : String) -> void:
+	if document.has(field_path):
+		document[field_path] = null
+		
+	if doc_fields.has(field_path):
+		doc_fields[field_path] = null
 
 # Pass the .fields inside a Firestore Document to print out the Dictionary { 'key' : 'value' }
-static func fields2dict(doc : Dictionary) -> Dictionary:
-	var dict : Dictionary = {}
+static func fields2dict(doc) -> Dictionary:
+	var dict = {}
 	if doc.has("fields"):
-		for field in (doc.fields).keys():
-			if (doc.fields)[field].has("mapValue"):
-				dict[field] = fields2dict((doc.fields)[field].mapValue)
-			elif (doc.fields)[field].has("timestampValue"):
-				dict[field] = timestamp2dict((doc.fields)[field].timestampValue)
-			elif (doc.fields)[field].has("arrayValue"):
-				dict[field] = fields2array((doc.fields)[field].arrayValue)
-			elif (doc.fields)[field].has("integerValue"):
-				dict[field] = (doc.fields)[field].values()[0] as int
-			elif (doc.fields)[field].has("doubleValue"):
-				dict[field] = (doc.fields)[field].values()[0] as float
-			elif (doc.fields)[field].has("booleanValue"):
-				dict[field] = (doc.fields)[field].values()[0] as bool
-			elif (doc.fields)[field].has("nullValue"):
+		var fields = doc["fields"]
+		print(fields)
+		for field in fields.keys():
+			if fields[field].has("mapValue"):
+				dict[field] = (fields2dict(fields[field].mapValue))
+			elif fields[field].has("timestampValue"):
+				dict[field] = timestamp2dict(fields[field].timestampValue)
+			elif fields[field].has("arrayValue"):
+				dict[field] = fields2array(fields[field].arrayValue)
+			elif fields[field].has("integerValue"):
+				dict[field] = fields[field].values()[0] as int
+			elif fields[field].has("doubleValue"):
+				dict[field] = fields[field].values()[0] as float
+			elif fields[field].has("booleanValue"):
+				dict[field] = fields[field].values()[0] as bool
+			elif fields[field].has("nullValue"):
 				dict[field] = null
 			else:
-				dict[field] = (doc.fields)[field].values()[0]
+				dict[field] = fields[field].values()[0]
 	return dict
 
 # Pass an Array to parse it to a Firebase arrayValue
@@ -104,7 +123,7 @@ static func array2fields(array : Array) -> Array:
 			TYPE_FLOAT: var_type = "doubleValue"
 			TYPE_STRING: var_type = "stringValue"
 			TYPE_ARRAY: var_type = "arrayValue"
-
+			_: var_type = "FieldTransform"
 		fields.append({ var_type : field })
 	return fields
 

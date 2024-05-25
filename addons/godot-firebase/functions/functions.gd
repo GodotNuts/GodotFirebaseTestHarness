@@ -84,7 +84,6 @@ func execute(function: String, method: int, params: Dictionary = {}, body: Dicti
 			url += key + "=" + params[key] + "&"
 
 	if not body.is_empty():
-		function_task._headers = PackedStringArray(["Content-Type: application/json"])
 		function_task._fields = JSON.stringify(body)
 
 	_pooled_request(function_task)
@@ -158,7 +157,7 @@ func _pooled_request(task : FunctionTask) -> void:
 		Firebase._print("Client connected as Anonymous")
 
 
-	task._headers = Array(task._headers) + [_AUTHORIZATION_HEADER + auth.idtoken]
+	task._headers = ["Content-Type: application/json", _AUTHORIZATION_HEADER + auth.idtoken]
 
 	var http_request : HTTPRequest
 	for request in _http_request_pool:
@@ -169,6 +168,7 @@ func _pooled_request(task : FunctionTask) -> void:
 	if not http_request:
 		http_request = HTTPRequest.new()
 		Utilities.fix_http_request(http_request)
+		http_request.accept_gzip = false
 		_http_request_pool.append(http_request)
 		add_child(http_request)
 		http_request.request_completed.connect(_on_pooled_request_completed.bind(http_request))

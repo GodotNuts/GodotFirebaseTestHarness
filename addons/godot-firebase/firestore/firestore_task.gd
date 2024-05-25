@@ -33,6 +33,9 @@ signal get_document(doc)
 ## Emitted when a [code]update(document)[/code] request checked a [class FirebaseCollection] is successfully completed. [code]error()[/code] signal will be emitted otherwise and [code]null[/code] will be passed as a result.
 ## @arg-types FirestoreDocument
 signal update_document(doc)
+## Emitted when a [code]write(document)[/code] request for a document is successfully completed. [code]error()[/code] signal will be emitted otherwise and [code]result[/code] will be passed as a result.
+## @arg-types FirestoreDocument
+signal commit_document(result)
 ## Emitted when a [code]delete(document)[/code] request checked a [class FirebaseCollection] is successfully completed and [code]true[/code] will be passed. [code]error()[/code] signal will be emitted otherwise and [code]false[/code] will be passed as a result.
 ## @arg-types bool
 signal delete_document(success)
@@ -52,7 +55,8 @@ enum Task {
 	TASK_PATCH,     ## A PATCH Request Task, processing a update() request
 	TASK_DELETE,    ## A DELETE Request Task, processing a delete() request
 	TASK_QUERY,     ## A POST Request Task, processing a query() request
-	TASK_LIST       ## A POST Request Task, processing a list() request
+	TASK_LIST,      ## A POST Request Task, processing a list() request
+	TASK_COMMIT      ## A POST Request Task that hits the write api
 }
 
 ## Mapping of Task enum values to descriptions for use in printing user-friendly error codes.
@@ -62,7 +66,8 @@ const TASK_MAP = {
 	Task.TASK_PATCH: "UPDATE DOCUMENT",
 	Task.TASK_DELETE: "DELETE DOCUMENT",
 	Task.TASK_QUERY: "QUERY COLLECTION",
-	Task.TASK_LIST: "LIST DOCUMENTS"
+	Task.TASK_LIST: "LIST DOCUMENTS", 
+	Task.TASK_COMMIT: "COMMIT DOCUMENT"
 }
 
 ## The code indicating the request Firestore is processing.
@@ -123,6 +128,8 @@ func _on_request_completed(result : int, response_code : int, headers : PackedSt
 					if bod.has("nextPageToken"):
 						data.append(bod.nextPageToken)
 				listed_documents.emit(data)
+			Task.TASK_COMMIT:
+				commit_document.emit(bod)
 	else:
 		var description = ""
 		if TASK_MAP.has(action):
@@ -145,6 +152,8 @@ func _on_request_completed(result : int, response_code : int, headers : PackedSt
 			Task.TASK_LIST:
 				data = []
 				listed_documents.emit(data)
+			Task.TASK_COMMIT:
+				commit_document.emit(null)
 
 	task_finished.emit(self)
 
@@ -172,6 +181,8 @@ func set_action(value : int) -> void:
 			_method = HTTPClient.METHOD_PATCH
 		Task.TASK_DELETE:
 			_method = HTTPClient.METHOD_DELETE
+		Task.TASK_COMMIT:
+			_method = HTTPClient.METHOD_POST
 
 
 func _handle_cache(offline : bool, data, encrypt_key : String, cache_path : String, body) -> Dictionary:

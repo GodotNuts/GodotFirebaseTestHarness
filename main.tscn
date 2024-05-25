@@ -77,6 +77,10 @@ label = "Storage"
 layout_mode = 2
 label = "Database"
 
+[node name="remoteconfig_tests" parent="menu/mid/mid2/HBoxContainer2" instance=ExtResource("4")]
+layout_mode = 2
+label = "RemoteConfig"
+
 [node name="bot" type="VBoxContainer" parent="menu"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -94,3 +98,4 @@ uppercase = true
 [connection signal="pressed" from="menu/mid/mid1/HBoxContainer/dynamiclinks_tests" to="." method="_on_dynamiclinks_tests_pressed"]
 [connection signal="pressed" from="menu/mid/mid2/HBoxContainer2/storage_tests" to="." method="_on_storage_tests_pressed"]
 [connection signal="pressed" from="menu/mid/mid2/HBoxContainer2/rtd_tests" to="." method="_on_rtd_tests_pressed"]
+[connection signal="pressed" from="menu/mid/mid2/HBoxContainer2/remoteconfig_tests" to="." method="_on_remoteconfig_tests_pressed"]

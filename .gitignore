@@ -10,3 +10,4 @@ data_*/
 addons/godot-firebase/.env
 *.DS_Store
 .godot/
+*.tmp

@@ -21,3 +21,6 @@ func _on_storage_tests_pressed():
 
 func _on_dynamiclinks_tests_pressed():
 	get_tree().change_scene_to_file("res://tests/links/links.tscn")
+
+func _on_remoteconfig_tests_pressed() -> void:
+	get_tree().change_scene_to_file("res://tests/remote_config/remote_config.tscn")

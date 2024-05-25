@@ -1,0 +1,114 @@
+[gd_scene load_steps=7 format=3 uid="uid://dfwguo732qgmx"]
+
+[ext_resource type="Script" path="res://tests/remote_config/remote_config.gd" id="1_ndtir"]
+[ext_resource type="Texture2D" uid="uid://dg74q2h440e5k" path="res://assets/background.png" id="2_245u4"]
+[ext_resource type="PackedScene" uid="uid://fnf1abx32uum" path="res://assets/buttons/normal_button.tscn" id="3_qhrqh"]
+[ext_resource type="Texture2D" uid="uid://dey7w6ieyntb" path="res://assets/buttons/normal_button.png" id="4_ucqi5"]
+[ext_resource type="Texture2D" uid="uid://d20ruxpv04p8y" path="res://assets/buttons/normal_button_disabled.png" id="5_dbun1"]
+[ext_resource type="Script" path="res://assets/buttons/normal_button.gd" id="6_2y600"]
+
+[node name="remote_config" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_ndtir")
+
+[node name="background" type="TextureRect" parent="."]
+layout_mode = 0
+offset_right = 1024.0
+offset_bottom = 600.0
+texture = ExtResource("2_245u4")
+
+[node name="title" type="Label" parent="."]
+layout_mode = 0
+offset_left = 376.0
+offset_top = 13.0
+offset_right = 498.0
+offset_bottom = 52.0
+text = "Remote Config Tests"
+uppercase = true
+
+[node name="back" parent="." instance=ExtResource("3_qhrqh")]
+unique_name_in_owner = true
+layout_mode = 1
+offset_right = 190.354
+offset_bottom = 44.6465
+label = "Back"
+
+[node name="test_remoteconfig" type="TextureButton" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 65.0
+offset_right = 190.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+texture_normal = ExtResource("4_ucqi5")
+texture_disabled = ExtResource("5_dbun1")
+script = ExtResource("6_2y600")
+label = "Test Remote Config"
+
+[node name="label" type="RichTextLabel" parent="test_remoteconfig"]
+layout_mode = 0
+offset_left = 10.0
+offset_right = 180.0
+offset_bottom = 45.0
+mouse_filter = 2
+bbcode_enabled = true
+
+[node name="console" type="RichTextLabel" parent="."]
+layout_mode = 0
+offset_left = 250.586
+offset_top = 117.012
+offset_right = 946.586
+offset_bottom = 522.012
+bbcode_enabled = true
+scroll_following = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_left = 4.0
+offset_top = 136.0
+offset_right = 28.0
+offset_bottom = 188.0
+
+[node name="login_check" type="CheckBox" parent="VBoxContainer" groups=["tests"]]
+unique_name_in_owner = true
+auto_translate_mode = 1
+layout_mode = 2
+mouse_filter = 2
+disabled = true
+button_mask = 0
+
+[node name="Label" type="Label" parent="VBoxContainer/login_check"]
+auto_translate_mode = 1
+layout_mode = 0
+offset_left = 26.0596
+offset_top = -3.06488
+offset_right = 76.0596
+offset_bottom = 22.9351
+text = "Login"
+
+[node name="get_remote_config" type="CheckBox" parent="VBoxContainer" groups=["tests"]]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+disabled = true
+button_mask = 0
+
+[node name="Label" type="Label" parent="VBoxContainer/get_remote_config"]
+layout_mode = 0
+offset_left = 26.0596
+offset_top = -3.06488
+offset_right = 76.0596
+offset_bottom = 22.9351
+text = "Got Remote Config"
+
+[connection signal="pressed" from="back" to="." method="_on_back_pressed"]
+[connection signal="pressed" from="test_remoteconfig" to="." method="_on_test_remote_config_pressed"]

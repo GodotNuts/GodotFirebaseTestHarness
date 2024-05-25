@@ -10,7 +10,8 @@ extends RefCounted
 signal add_document(doc)
 signal get_document(doc)
 signal update_document(doc)
-signal delete_document()
+signal commit_document(result)
+signal delete_document(deleted)
 signal error(code,status,message)
 
 const _AUTHORIZATION_HEADER : String = "Authorization: Bearer "
@@ -21,7 +22,6 @@ const _documentId_tag : String = "documentId="
 
 var auth : Dictionary
 var collection_name : String
-var firestore # FirebaseFirestore (can't static type due to cyclic reference)
 
 var _base_url : String
 var _extended_url : String
@@ -64,7 +64,7 @@ func add(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
 ## @args document_id, fields
 ## @arg-defaults , {}
 ## @return FirestoreTask
-# used to UPDATE a document, specify @documentID and @fields
+# used to UPDATE a document, specify @documentID, @fields
 func update(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
 	var task : FirestoreTask = FirestoreTask.new()
 	task.action = FirestoreTask.Task.TASK_PATCH
@@ -72,11 +72,36 @@ func update(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
 	var url = _get_request_url() + _separator + document_id.replace(" ", "%20") + "?"
 	for key in fields.keys():
 		url+="updateMask.fieldPaths={key}&".format({key = key})
+			
 	url = url.rstrip("&")
-
+	
+	for key in fields.keys():
+		if fields[key] == null:
+			fields.erase(key)
+	
 	task.update_document.connect(_on_update_document)
 	task.task_finished.connect(_on_task_finished.bind(document_id), CONNECT_DEFERRED)
-	_process_request(task, document_id, url, JSON.stringify(FirestoreDocument.dict2fields(fields)))
+	var body = FirestoreDocument.dict2fields(fields)
+	
+	_process_request(task, document_id, url, JSON.stringify(body))
+	return task
+	
+func commit(document : FirestoreDocument) -> FirestoreTask:
+	var task : FirestoreTask = FirestoreTask.new()
+	task.action = FirestoreTask.Task.TASK_COMMIT
+	var url = _base_url + _extended_url.rstrip("/") + ":commit"
+	task.commit_document.connect(_on_commit_document)
+	task.task_finished.connect(_on_task_finished.bind(document.doc_name), CONNECT_DEFERRED)
+	
+	document._transforms.set_config(
+		{
+		  "extended_url": _extended_url,
+		  "collection_name": collection_name
+		}
+	) # Only place we can set this is here, oofness
+	
+	var body = document._transforms.serialize()
+	_process_request(task, document.doc_name, url, JSON.stringify(body))
 	return task
 
 ## @args document_id
@@ -118,7 +143,7 @@ func _process_request(task : FirestoreTask, document_id : String, url : String, 
 		_request_queues[document_id].append(task)
 	else:
 		_request_queues[document_id] = []
-		firestore._pooled_request(task)
+		Firebase.Firestore._pooled_request(task)
 
 func _on_task_finished(task : FirestoreTask, document_id : String) -> void:
 	if not _request_queues[document_id].is_empty():
@@ -134,9 +159,12 @@ func _on_add_document(document : FirestoreDocument):
 func _on_update_document(document : FirestoreDocument):
 	update_document.emit(document)
 
-func _on_delete_document():
-	delete_document.emit()
+func _on_delete_document(deleted):
+	delete_document.emit(deleted)
 
 func _on_error(code, status, message, task):
 	error.emit(code, status, message)
 	Firebase._printerr(message)
+
+func _on_commit_document(result):
+	commit_document.emit(result)
