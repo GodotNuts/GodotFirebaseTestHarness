@@ -5,7 +5,7 @@
 ## Documentation TODO.
 @tool
 class_name FirestoreCollection
-extends RefCounted
+extends Node
 
 signal add_document(doc)
 signal get_document(doc)
@@ -50,7 +50,7 @@ func get_doc(document_id : String) -> FirestoreTask:
 ## @arg-defaults , {}
 ## @return FirestoreTask
 ## used to SAVE/ADD a new document to the collection, specify @documentID and @fields
-func add(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
+func add(document_id : String, data : Dictionary = {}) -> FirestoreTask:
 	var task : FirestoreTask = FirestoreTask.new()
 	task.action = FirestoreTask.Task.TASK_POST
 	task.data = collection_name + "/" + document_id
@@ -58,41 +58,42 @@ func add(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
 
 	task.add_document.connect(_on_add_document)
 	task.task_finished.connect(_on_task_finished.bind(document_id), CONNECT_DEFERRED)
-	_process_request(task, document_id, url, JSON.stringify(FirestoreDocument.dict2fields(fields)))
+	_process_request(task, document_id, url, JSON.stringify(Utilities.dict2fields(data)))
 	return task
 
 ## @args document_id, fields
 ## @arg-defaults , {}
 ## @return FirestoreTask
 # used to UPDATE a document, specify @documentID, @fields
-func update(document_id : String, fields : Dictionary = {}) -> FirestoreTask:
+func update(document : FirestoreDocument) -> FirestoreTask:
 	var task : FirestoreTask = FirestoreTask.new()
 	task.action = FirestoreTask.Task.TASK_PATCH
-	task.data = collection_name + "/" + document_id
-	var url = _get_request_url() + _separator + document_id.replace(" ", "%20") + "?"
-	for key in fields.keys():
+	task.data = collection_name + "/" + document.doc_name
+	var url = _get_request_url() + _separator + document.doc_name.replace(" ", "%20") + "?"
+	for key in document.keys():
 		url+="updateMask.fieldPaths={key}&".format({key = key})
 			
 	url = url.rstrip("&")
 	
-	for key in fields.keys():
-		if fields[key] == null:
-			fields.erase(key)
+	for key in document.keys():
+		if document.get_value(key) == null:
+			document._erase(key)
 	
 	task.update_document.connect(_on_update_document)
-	task.task_finished.connect(_on_task_finished.bind(document_id), CONNECT_DEFERRED)
-	var body = FirestoreDocument.dict2fields(fields)
+	task.task_finished.connect(_on_task_finished.bind(document.doc_name), CONNECT_DEFERRED)
 	
-	_process_request(task, document_id, url, JSON.stringify(body))
+	var body = JSON.stringify({"fields": document.document}, " ")
+	
+	_process_request(task, document.doc_name, url, body)
 	return task
 	
 func commit(document : FirestoreDocument) -> FirestoreTask:
 	var task : FirestoreTask = FirestoreTask.new()
 	task.action = FirestoreTask.Task.TASK_COMMIT
-	var url = _base_url + _extended_url.rstrip("/") + ":commit"
+	var url = get_database_url("commit")
 	task.commit_document.connect(_on_commit_document)
 	task.task_finished.connect(_on_task_finished.bind(document.doc_name), CONNECT_DEFERRED)
-	
+
 	document._transforms.set_config(
 		{
 		  "extended_url": _extended_url,
@@ -154,6 +155,7 @@ func _on_get_document(document : FirestoreDocument):
 	get_document.emit(document)
 
 func _on_add_document(document : FirestoreDocument):
+	document.collection_name = collection_name
 	add_document.emit(document)
 
 func _on_update_document(document : FirestoreDocument):
@@ -168,3 +170,11 @@ func _on_error(code, status, message, task):
 
 func _on_commit_document(result):
 	commit_document.emit(result)
+
+func _add_document_listener(document_path : String, with_func : Callable):
+	var listener = preload("res://addons/godot-firebase/firestore/firestore_listener.tscn").instantiate()
+	add_child(listener)
+	return listener.connect_to_firestore(_config) 
+
+func get_database_url(append) -> String:
+	return _base_url + _extended_url.rstrip("/") + ":" + append

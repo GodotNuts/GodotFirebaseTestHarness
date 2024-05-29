@@ -115,6 +115,7 @@ func collection(path : String) -> FirestoreCollection:
 		coll.auth = auth
 		coll.collection_name = path
 		collections[path] = coll
+		add_child(coll)
 		return coll
 	else:
 		return collections[path]
@@ -225,7 +226,6 @@ func _set_config(config_json : Dictionary) -> void:
 	# Since caching is causing a lot of issues, I'm removing this check for now. We will revisit this in the future, once we have some time to investigate why the cache is being corrupted.
 
 	_check_emulating()
-
 
 func _check_emulating() -> void :
 	## Check emulating
