@@ -44,14 +44,17 @@ func _test_error(data) -> void:
 	_test_finished()
 
 func _cleanup_previous_run():
-	var del_task : FirestoreTask = _collection.delete("Document1")
-	var deleted = await del_task.delete_document
-
+	var previous_run = await _collection.get_doc("Document1")
+	if previous_run != null:
+		var deleted = await _collection.delete(previous_run)
+		if deleted:
+			_print_to_console("Document1 deleted")
+	
 # Function called when login to Firebase has completed successfully
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
 	_print_to_console("Login with email and password has worked")
 	$login_check.button_pressed = true
-	_test_firestore()
+	await _test_firestore()
 
 # Function called when login to Firebase has failed
 # Ends the test and prints the error to the GUI console
@@ -75,28 +78,28 @@ func _test_firestore() -> void:
 	_print_to_console("\nConnecting to collection 'Firebasetester'")
 	_collection = Firebase.Firestore.collection('Firebasetester')
 	
-	# Connect to signals needed for testing
-	_collection.add_document.connect(on_document_add)
-	_collection.get_document.connect(on_document_get)
-	_collection.update_document.connect(on_document_update)
-	_collection.delete_document.connect(on_document_delete)
-	_collection.error.connect(on_document_error)
-	#await _cleanup_previous_run()
+	await _cleanup_previous_run()
 	# Add Document1 to Firestore
-	#_print_to_console("Trying to add a document")
-	#var add_task : FirestoreTask = _collection.add("Document1", {'name': 'Document1', 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 })
-	#_document = await add_task.add_document
-	#$add_document.button_pressed = true
+	_print_to_console("Trying to add a document")
+	_document = await _collection.add("Document1", {'name': 'Document1', 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 })
+	$add_document.button_pressed = true
 	#
 	## Get Document1 (Document that has been added from the previous step)
-	#_print_to_console("Trying to get Document1")
-	var get_task = _collection.get_doc('Document1')
-	_document = await _collection.get_document
-	#if(_document == null):
-		#_test_error("Failed to get document")
-		#return
-	#else:
-		#$get_document.button_pressed = true
+	_print_to_console("Trying to get Document1")
+	_document = await _collection.get_doc('Document1')
+	
+	if(_document == null):
+		_test_error("Failed to get document")
+		return
+		
+	_document = await _collection.get_doc('Document1', true)
+	
+	if(_document == null):
+		_test_error("Failed to get document from cache")
+		return
+
+		
+	
 	#
 	## Print Document1 to the console GUI
 	#_print_to_console("Trying to print contents of Document1")
@@ -177,72 +180,38 @@ func _test_firestore() -> void:
 func run_listener_tests() -> void:
 	#var add_task : FirestoreTask = _collection.add("Document1", {'name': 'Document1', 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 })
 	#_document = await add_task.add_document
-	listener_test_count = 0
-	var listener = _document.on_snapshot(func(result): print(result))
-	await get_tree().create_timer(5.0).timeout
+	_document = await _collection.get_doc("Document1", false)
+	
+	var listener = _document.on_snapshot(
+		func(result):
+			print(result)
+	, .5) # Attempt to update every half second
 	
 	const new_doc_name = 'NewDocument'
 	
 	_document.add_or_update_field("name", new_doc_name)
+	print("Name updated")
+	_document = await _collection.update(_document, true)
+	print("Document updated")
 	
-	var update_task : FirestoreTask = _collection.update(_document)
-	_document = await update_task.update_document
-	#
-	#var timestamp_transform = ServerTimestampTransform.new(_document.doc_name, true, "server_timestamp_attempt")
-	#var increment_transform = IncrementTransform.new(_document.doc_name, true, "increment_field", 2)
-	#var decrement_transform = DecrementTransform.new(_document.doc_name, true, "decrement_field", 2)
-	#var max_transform = MaxTransform.new(_document.doc_name, true, "max_field", 10) # Should update
-	#var min_transform = MinTransform.new(_document.doc_name, true, "min_field", -2) # Should update
-	#_document.add_field_transform(timestamp_transform)
-	#_document.add_field_transform(increment_transform)
-	#_document.add_field_transform(decrement_transform)
-	#_document.add_field_transform(max_transform)
-	#_document.add_field_transform(min_transform)
-	#var up_task = _collection.commit(_document)
-	#var result = await up_task.commit_document
-	#
-	#
-	await get_tree().create_timer(10.0).timeout
-	var get_task = _collection.get_doc('Document1')
-	_document = await _collection.get_document
+	await get_tree().create_timer(1.0).timeout	
+	_document.add_or_update_field("name", new_doc_name + "2")
+	print("Updated a second time")
 	
+	await get_tree().create_timer(1.0).timeout
+	var deleted = await _collection.delete(_document)
+	if deleted:
+		print("Deleted document")
+	await get_tree().create_timer(5.0).timeout
 	
-	_print_to_console("Count outside: " + str(listener_test_count))
+	_document = await _collection.add("Document1", {'name': 'Document1', 'active': 'true', "serviker_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 })
+	print("Document re-added")
 	
-	#listener.stop()
-	
+	print("Listener stopped")
+	listener.stop()
 	
 	_document.add_or_update_field("name", new_doc_name + "2")
-	
-	update_task = _collection.update(_document)
-	_document = await update_task.update_document
-	
-	_print_to_console("Count: " + str(listener_test_count))
-	
-	
-
-# Function called when a document has been added to Firestore successfully
-func on_document_add(document_added : FirestoreDocument) -> void:
-	_print_to_console("Document added successfully")
-
-# Function called when a document has been retrived from Firestore successfully
-func on_document_get(document_got : FirestoreDocument) -> void:
-	_print_to_console("Document got successfully")
-
-# Function called when a document has been updated in Firestore successfully
-func on_document_update(document_updated : FirestoreDocument) -> void:
-	#_print_to_console("Current document after update: " + str(document_updated))
-	_print_to_console("Document Updated successfully")
-
-# Function called when a document has been deleted in Firestore successfully
-func on_document_delete(deleted) -> void:
-	_print_to_console("Document deleted: " + str(deleted))
-
-# Function called when a function with Firestore has failed
-func on_document_error(code, status, message) -> void:
-	_print_to_console_error("error code: " + str(code))
-	_print_to_console_error("message: " + str(message))
-	_test_error("There was an issue")
+	_document = await _collection.update(_document)
 
 # Function used to print data to the console GUI for the end user
 func _print_to_console(data):

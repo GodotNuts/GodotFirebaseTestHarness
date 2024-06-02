@@ -55,8 +55,26 @@ static func dict2fields(dict : Dictionary) -> Dictionary:
 static func from_firebase_type(value : Variant) -> Variant:
 	if value == null:
 		return null
-		
-	return value.values()[0]
+	
+	if value.has("mapValue"):
+		value = _from_firebase_type_recursive(value.value()[0].fields)
+	elif value.has("timestampValue"):
+		value = Time.get_datetime_dict_from_datetime_string(value.values()[0], false)
+	else:
+		value = value.values()[0]
+	
+	return value
+	
+static func _from_firebase_type_recursive(value : Variant) -> Variant:
+	if value == null:
+		return null
+
+	if value.has("mapValue") or value.has("timestampValue"):
+		value = _from_firebase_type_recursive(value.value()[0].fields)
+	else:
+		value = value.value()[0]
+	
+	return value
 
 static func to_firebase_type(value : Variant) -> Dictionary:
 	var var_type : String = ""
@@ -156,19 +174,22 @@ static func fields2array(array : Dictionary) -> Array:
 
 # Converts a gdscript Dictionary (most likely obtained with Time.get_datetime_dict_from_system()) to a Firebase Timestamp
 static func dict2timestamp(dict : Dictionary) -> String:
-	dict.erase('weekday')
-	dict.erase('dst')
-	var dict_values : Array = dict.values()
-	return "%04d-%02d-%02dT%02d:%02d:%02d.00Z" % dict_values
+	#dict.erase('weekday')
+	#dict.erase('dst')
+	#var dict_values : Array = dict.values()
+	var time = Time.get_datetime_string_from_datetime_dict(dict, false)
+	return time
+	#return "%04d-%02d-%02dT%02d:%02d:%02d.00Z" % dict_values
 
 # Converts a Firebase Timestamp back to a gdscript Dictionary
 static func timestamp2dict(timestamp : String) -> Dictionary:
-	var datetime : Dictionary = {year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0}
-	var dict : PackedStringArray = timestamp.split("T")[0].split("-")
-	dict.append_array(timestamp.split("T")[1].split(":"))
-	for value in dict.size() :
-		datetime[datetime.keys()[value]] = int(dict[value])
-	return datetime
+	return Time.get_datetime_dict_from_datetime_string(timestamp, false)
+	#var datetime : Dictionary = {year = 0, month = 0, day = 0, hour = 0, minute = 0, second = 0}
+	#var dict : PackedStringArray = timestamp.split("T")[0].split("-")
+	#dict.append_array(timestamp.split("T")[1].split(":"))
+	#for value in dict.size():
+		#datetime[datetime.keys()[value]] = int(dict[value])
+	#return datetime
 
 static func is_field_timestamp(field : Dictionary) -> bool:
 	return field.has_all(['year','month','day','hour','minute','second'])
