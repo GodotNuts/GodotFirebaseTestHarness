@@ -468,6 +468,7 @@ func _on_FirebaseAuth_request_completed(result : int, response_code : int, heade
 	auth_request_type = Auth_Type.NONE
 
 
+
 # Function used to save the auth data provided by Firebase into an encrypted file
 # Note this does not work in HTML5 or UWP
 func save_auth(auth : Dictionary) -> bool:
@@ -601,6 +602,8 @@ func delete_user_account() -> void:
 		if err != OK:
 			is_busy = false
 			Firebase._printerr("Error deleting user: %s" % err)
+		else:
+			remove_auth()
 
 
 # Function is called when a new token is issued to a user. The function will yield until the token has expired, and then request a new one.
