@@ -57,7 +57,7 @@ static func from_firebase_type(value : Variant) -> Variant:
 		return null
 	
 	if value.has("mapValue"):
-		value = _from_firebase_type_recursive(value.value()[0].fields)
+		value = _from_firebase_type_recursive(value.values()[0].fields)
 	elif value.has("timestampValue"):
 		value = Time.get_datetime_dict_from_datetime_string(value.values()[0], false)
 	else:
@@ -72,7 +72,7 @@ static func _from_firebase_type_recursive(value : Variant) -> Variant:
 	if value.has("mapValue") or value.has("timestampValue"):
 		value = _from_firebase_type_recursive(value.value()[0].fields)
 	else:
-		value = value.value()[0]
+		value = value.values()[0]
 	
 	return value
 
@@ -316,3 +316,11 @@ class ObservableDictionary extends RefCounted:
 	func _set(property: StringName, value: Variant) -> bool:
 		update(property, value)
 		return true
+
+class AwaitDetachable extends Node2D:
+	var awaiter : Signal
+
+	func _init(freeable_node, await_signal : Signal) -> void:
+		awaiter = await_signal
+		add_child(freeable_node)
+		awaiter.connect(queue_free)

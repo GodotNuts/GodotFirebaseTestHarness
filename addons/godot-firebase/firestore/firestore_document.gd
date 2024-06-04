@@ -16,7 +16,6 @@ var doc_name : String           # only .name
 var create_time : String        # createTime
 var collection_name : String    # Name of the collection to which it belongs
 var _transforms : FieldTransformArray     # The transforms to apply
-
 signal changed(changes)
 
 func _init(doc : Dictionary = {}):
@@ -29,43 +28,90 @@ func _init(doc : Dictionary = {}):
 		
 	self.create_time = doc.createTime
 
-func replace(with : Dictionary) -> void:
+func replace(with : FirestoreDocument, is_listener := false) -> void:
 	var current = document.duplicate()
-	document = with
+	document = with.document
 	
 	var changes = {
-		"added": [], "removed": [], "updated": []
+		"added": [], "removed": [], "updated": [], "is_listener": is_listener
 	}
 	
 	for key in current.keys():
 		if not document.has(key):
-			changes.removed.push_back({key : ""})
+			changes.removed.push_back({ "key" : key })
 		else:
 			var new_value = Utilities.from_firebase_type(document[key])
 			var old_value = Utilities.from_firebase_type(current[key])
-			changes.updated.push_back({ key : { "old": old_value, "new" : new_value }})
+			if new_value != old_value:
+				if old_value == null:
+					changes.removed.push_back({ "key" : key }) # ??
+				else:
+					changes.updated.push_back({ "key" : key, "old": old_value, "new" : new_value })
+	
+	for key in document.keys():
+		if not current.has(key):
+			changes.added.push_back({ "key" : key, "new" : Utilities.from_firebase_type(document[key]) })
+	
+	if not (changes.added.is_empty() and changes.removed.is_empty() and changes.updated.is_empty()):
+		changed.emit(changes)
 
 func is_null_value(key) -> bool:
-	return document.has(key) and document[key].keys()[0] == "nullValue"
+	return document.has(key) and Utilities.from_firebase_type(document[key]) == null
 
+# As of right now, we do not track these with track changes; instead, they'll come back when the document updates from the server.
+# Until that time, it's expected if you want to track these types of changes that you commit for the transforms and then get the document yourself.
 func add_field_transform(transform : FieldTransform) -> void:
 	_transforms.push_back(transform)
 
+func remove_field_transform(transform : FieldTransform) -> void:
+	_transforms.erase(transform)
+	
+func clear_field_transforms() -> void:
+	_transforms.transforms.clear()
+
 func remove_field(field_path : String) -> void:
 	if document.has(field_path):
-		document[field_path] = null
+		document[field_path] = Utilities.to_firebase_type(null)
+		
+		var changes = {
+			"added": [], "removed": [], "updated": [], "is_listener": false
+		}
+		
+		changes.removed.push_back({ "key" : field_path })
+		changed.emit(changes)
 		
 func _erase(field_path : String) -> void:
 	document.erase(field_path)
 
-func add_or_update_field(field_path : String, value : Variant) -> void:
+func add_or_update_field(field_path : String, value : Variant) -> void:		
+	var changes = {
+		"added": [], "removed": [], "updated": [], "is_listener": false
+	}
+	
+	var existing_value = get_value(field_path)
+	var has_field_path = existing_value != null and not is_null_value(field_path)
+	
 	var converted_value = Utilities.to_firebase_type(value)
 	document[field_path] = converted_value
+	
+	if has_field_path:
+		changes.updated.push_back({ "key" : field_path, "old" : existing_value, "new" : value })
+	else:
+		changes.added.push_back({ "key" : field_path, "new" : value })
 
-func on_snapshot(listener : Callable, poll_time : float) -> FirestoreListener.FirestoreListenerConnection:
-	var collection = Firebase.Firestore.collection(collection_name)
-	var result = collection._add_document_listener(self, poll_time)
-	result.connection.document_updated.connect(listener, CONNECT_REFERENCE_COUNTED) # Ensure nothing leaks when connecting more than once, nor errors show up if already connected
+	changed.emit(changes)
+	
+func on_snapshot(when_called : Callable, poll_time : float = 1.0) -> FirestoreListener.FirestoreListenerConnection:
+	if get_child_count() >= 1: # Only one listener per
+		assert(false, "Multiple listeners not allowed for the same document yet")
+		return
+	
+	changed.connect(when_called, CONNECT_REFERENCE_COUNTED)
+	var listener = preload("res://addons/godot-firebase/firestore/firestore_listener.tscn").instantiate()
+	add_child(listener)
+	listener.initialize_listener(collection_name, doc_name, poll_time)
+	listener.owner = self
+	var result = listener.enable_connection()
 	return result
 
 func get_value(property : StringName) -> Variant:
