@@ -12,10 +12,14 @@ var _document : FirestoreDocument
 const _email : String = 'testaccount@godotnuts.test'
 const _password : String = 'Password1234'
 
+var listener_test_count := 0
+
+var DefaultDocument = { 'name': 'Document1', 'points': 20, 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 }
+
 # Function called when the scene is ready
 func _ready():
-	Firebase.Auth.connect("login_succeeded",Callable(self,"_on_FirebaseAuth_login_succeeded"))
-	Firebase.Auth.connect("login_failed",Callable(self,"_on_login_failed"))
+	Firebase.Auth.login_succeeded.connect(_on_FirebaseAuth_login_succeeded)
+	Firebase.Auth.login_failed.connect(_on_login_failed)
 
 # Function called when the test starts 
 # Clears all checkboxes to clean the GUI
@@ -42,14 +46,17 @@ func _test_error(data) -> void:
 	_test_finished()
 
 func _cleanup_previous_run():
-	var del_task : FirestoreTask = _collection.delete("Document1")
-	var deleted = await del_task.delete_document
-
+	var previous_run = await _collection.get_doc("Document1")
+	if previous_run != null:
+		var deleted = await _collection.delete(previous_run)
+		if deleted:
+			_print_to_console("Document1 deleted")
+	
 # Function called when login to Firebase has completed successfully
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
 	_print_to_console("Login with email and password has worked")
 	$login_check.button_pressed = true
-	_test_firestore()
+	await _test_firestore()
 
 # Function called when login to Firebase has failed
 # Ends the test and prints the error to the GUI console
@@ -73,30 +80,28 @@ func _test_firestore() -> void:
 	_print_to_console("\nConnecting to collection 'Firebasetester'")
 	_collection = Firebase.Firestore.collection('Firebasetester')
 	
-	# Connect to signals needed for testing
-	_collection.add_document.connect(on_document_add)
-	_collection.get_document.connect(on_document_get)
-	_collection.update_document.connect(on_document_update)
-	_collection.delete_document.connect(on_document_delete)
-	_collection.error.connect(on_document_error)
 	await _cleanup_previous_run()
 	# Add Document1 to Firestore
 	_print_to_console("Trying to add a document")
-	var add_task : FirestoreTask = _collection.add("Document1", {'name': 'Document1', 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 })
-	_document = await add_task.add_document
+	_document = await _collection.add("Document1", DefaultDocument)
 	$add_document.button_pressed = true
-	
-	# Get Document1 (Document that has been added from the previous step)
+	#
+	## Get Document1 (Document that has been added from the previous step)
 	_print_to_console("Trying to get Document1")
-	var get_task = _collection.get_doc('Document1')
-	_document = await _collection.get_document
+	_document = await _collection.get_doc('Document1')
+	
 	if(_document == null):
 		_test_error("Failed to get document")
 		return
-	else:
-		$get_document.button_pressed = true
+		
+	_document = await _collection.get_doc('Document1', true)
 	
-	# Print Document1 to the console GUI
+	if(_document == null):
+		_test_error("Failed to get document from cache")
+		return
+
+	#
+	## Print Document1 to the console GUI
 	_print_to_console("Trying to print contents of Document1")
 	_print_to_console(_document)
 	$print_document.button_pressed = true
@@ -111,81 +116,91 @@ func _test_firestore() -> void:
 	_document.add_field_transform(decrement_transform)
 	_document.add_field_transform(max_transform)
 	_document.add_field_transform(min_transform)
-	var up_task = _collection.commit(_document)
-	var result = await up_task.commit_document
+	var commit_changes = await _collection.commit(_document)
 	
-	get_task = _collection.get_doc('Document1')
-	_document = await _collection.get_document
+	_document = await _collection.get_doc('Document1')
 	
-	## Print Document1 to the console GUI
+	### Print Document1 to the console GUI
 	_print_to_console("Trying to print contents of Document1 after transform")
 	_print_to_console(_document)
 	$print_document_2.button_pressed = true
 	
 	_print_to_console("Attempting to remove item from Document1")
-	var key = _document.document.keys().front()
+	var previous_document_size = _document.keys().size()
+	_print_to_console("Current document key size: " + str(previous_document_size))
+	
+	var key = "name"
 	_document.remove_field(key)
 	
-	_print_to_console("Key erased: " + key)
-	_print_to_console("Document now:\n" + str(_document))
-	_print_to_console("\n")
+	_document = await _collection.update(_document)
 	
-	var previous_document_size = _document.doc_fields.keys().size()
+	_print_to_console("After update, document key size is: " + str(_document.keys().size()))
 	
-	var delete_from_task : FirestoreTask = _collection.update("Document1", _document.doc_fields)
-	_document = await delete_from_task.update_document
+	if previous_document_size == _document.keys().size():
+		_print_to_console_error("Did not properly delete item from document")
 	
-	_print_to_console("Document now:\n" + str(_document))
-	if previous_document_size < _document.doc_fields.keys().size():
-		_print_to_console_error("Did not properly delete item, it was merged after only fixing document and not doc_fields")
-	
-	_print_to_console("Previous document keys count: " + str(previous_document_size))
-	_print_to_console("Document keys count: " + str(_document.doc_fields.keys().size()))
-	
-	# Delete Document1 from Firestore
-	_print_to_console("Trying to delete Document1")
-	var del_task : FirestoreTask = _collection.delete("Document1")
-	var deleted = await del_task.delete_document
-	$delete_document.button_pressed = true
-	
-	# Query Collection
+	## Query Collection
 	_print_to_console("\nRunning Firestore Query")
 	var query : FirestoreQuery = FirestoreQuery.new()
 	query.from("Firebasetester")
 	query.where("points", FirestoreQuery.OPERATOR.GREATER_THAN, 5)
 	query.order_by("points", FirestoreQuery.DIRECTION.DESCENDING)
 	query.limit(10)
-	var query_task : FirestoreTask = Firebase.Firestore.query(query)
-	result = await query_task.result_query
+	var result = await Firebase.Firestore.query(query)
 	_print_to_console(result)
 	$run_query.button_pressed = true
+		
+	_print_to_console("Running listener tests")
 	
+	await run_listener_tests()
+	
+	await _cleanup_previous_run()
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED FIRESTORE TESTS")
 	_test_finished()
 
-# Function called when a document has been added to Firestore successfully
-func on_document_add(document_added : FirestoreDocument) -> void:
-	_print_to_console("Document added successfully")
-
-# Function called when a document has been retrived from Firestore successfully
-func on_document_get(document_got : FirestoreDocument) -> void:
-	_print_to_console("Document got successfully")
-
-# Function called when a document has been updated in Firestore successfully
-func on_document_update(document_updated : FirestoreDocument) -> void:
-	_print_to_console("Current document after update: " + str(document_updated))
-	_print_to_console("Document Updated successfully")
-
-# Function called when a document has been deleted in Firestore successfully
-func on_document_delete(deleted) -> void:
-	_print_to_console("Document deleted: " + str(deleted))
-
-# Function called when a function with Firestore has failed
-func on_document_error(code, status, message) -> void:
-	_print_to_console_error("error code: " + str(code))
-	_print_to_console_error("message: " + str(message))
-	_test_error("There was an issue")
+func run_listener_tests() -> void:
+	_document = await _collection.get_doc("Document1")
+	await get_tree().create_timer(0.3).timeout
+	
+	var listener = _document.on_snapshot(
+		func(result):
+			if result.is_listener:
+				print(JSON.stringify(result, "  "))
+				, 0.1
+	)
+	
+	print("Doc child count: ", _document.get_child_count(true))
+	
+	const new_doc_name = 'NewDocument'
+	
+	_document.add_or_update_field("name", new_doc_name)
+	print("Changed name locally")
+	
+	await get_tree().create_timer(2.0).timeout	
+	_document.add_or_update_field("name", new_doc_name + "2")
+	print("Changed name locally again")
+	
+	await get_tree().create_timer(2.0).timeout
+	
+	_document.add_or_update_field("name", "Document1")
+	_document.remove_field("active")
+	
+	_document = await _collection.update(_document)
+	
+	var deleted = await _collection.delete(_document)
+	if deleted:
+		print("Deleted document")
+	await get_tree().create_timer(1.0).timeout
+	
+	listener.stop()
+	print("Listener stopped")
+	
+	_document = await _collection.add("Document1", DefaultDocument)
+	print("Document re-added")
+	
+	_document.add_or_update_field("name", new_doc_name + "2")
+	_document = await _collection.update(_document)
 
 # Function used to print data to the console GUI for the end user
 func _print_to_console(data):

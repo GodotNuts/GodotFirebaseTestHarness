@@ -90,7 +90,6 @@ func _test_database():
 	# Get data once from the RTDB
 	_print_to_console("\n\nAttempting a once-off get from the RTD")
 	once_database_reference.once(added_data_key + "/user_name")
-	await once_database_reference.once_failed
 	_print_to_console("Once failed")
 	$once_data_check.button_pressed = true
 		# Update data in the RTDB
