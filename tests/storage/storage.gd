@@ -59,120 +59,101 @@ func _test_storage():
 	
 	# Upload test image to Storage
 	_print_to_console("Trying to Upload image...")
-	var upload_task = Firebase.Storage.ref("Firebasetester/upload/image.png").put_file("res://assets/image.png")
-	await upload_task.task_finished
+	var upload = await Firebase.Storage.ref("Firebasetester/upload/image.png").put_file("res://assets/image.png")
 	$upload_image_check.button_pressed = true
 	
 	# Download image and display it in the GUi for the end user
 	_print_to_console("\nTrying to download image and display it...")
-	var image = get_image('image.png')
-	var data = await image.task_finished
-	var converted_image = task2image(image)
+	var image = await get_image('image.png')
+	var converted_image = variant2image(image)
 	$image.texture = converted_image
 	$download_image_check.button_pressed = true
 	
 	# Get download URL for the image and display it in the GUI to the end user
 	_print_to_console("\nTrying to get download URL...")
-	var url_task = Firebase.Storage.ref("Firebasetester/upload/image.png").get_download_url()
-	await url_task.task_finished
-	_print_to_console(url_task.data)
+	var url = await Firebase.Storage.ref("Firebasetester/upload/image.png").get_download_url()
+	_print_to_console(url)
 	$image_url_check.button_pressed = true
 	
 	# Get the metadata for the image and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
-	var meta_task = Firebase.Storage.ref("Firebasetester/upload/image.png").get_metadata()
-	await meta_task.task_finished
-	_print_to_console(meta_task.data)
+	var meta = await Firebase.Storage.ref("Firebasetester/upload/image.png").get_metadata()
+	_print_to_console(meta)
 	$image_meta_check.button_pressed = true
 	
 	# Delete the test image from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
-	var list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
-	var delete_task = Firebase.Storage.ref("Firebasetester/upload/image.png").delete()
-	await delete_task.task_finished
+	await list_all_current()
+	var delete = await Firebase.Storage.ref("Firebasetester/upload/image.png").delete()
 	_print_to_console("After Delete...")
-	list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
+	await list_all_current()
 	$image_delete_check.button_pressed = true
 	
 	# Upload test document to Storage
 	_print_to_console("\nTrying to upload file")
-	upload_task = Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").put_file("res://assets/dummy.pdf")
-	await upload_task.task_finished
+	upload = await Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").put_file("res://assets/dummy.pdf")
 	$upload_document_check.button_pressed = true
 	
 	# Get the metadata for the document and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
-	meta_task = Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").get_metadata()
-	await meta_task.task_finished
-	_print_to_console(meta_task.data)
+	meta = await Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").get_metadata()
+	_print_to_console(meta)
 	$document_meta_check.button_pressed = true
 	
 	# Delete the test document from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
-	list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
-	delete_task = Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").delete()
-	await delete_task.task_finished
+	await list_all_current()
+	delete = await Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").delete()
 	_print_to_console("After Delete...")
-	list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
+	await list_all_current()
 	$document_delete_check.button_pressed = true
 	
 	# Upload string to Storage
 	_print_to_console("\nTrying to write a string...")
-	upload_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").put_string("Test", {})
-	await upload_task.task_finished
+	upload = await Firebase.Storage.ref("Firebasetester/upload/junkdata").put_string("Test", {})
 	$upload_string_check.button_pressed = true
 	
 	# Add metadata to the string
 	_print_to_console("\nTrying to add metadata to it...")
-	meta_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").update_metadata({"Test": "This is a Test", "SillyData": "We got it"})
-	await meta_task.task_finished
+	meta = await Firebase.Storage.ref("Firebasetester/upload/junkdata").update_metadata({"Test": "This is a Test", "SillyData": "We got it"})
 	$string_add_meta_check.button_pressed = true
 	
 	# Get the metadata for the string and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
-	meta_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").get_metadata()
-	await meta_task.task_finished
-	_print_to_console(meta_task.data)
+	meta = await Firebase.Storage.ref("Firebasetester/upload/junkdata").get_metadata()
+	_print_to_console(meta)
 	$string_meta_check.button_pressed = true
 	
 	# Delete the test string from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
-	list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
-	delete_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").delete()
-	await delete_task.task_finished
+	await list_all_current()
+	delete = await Firebase.Storage.ref("Firebasetester/upload/junkdata").delete()
 	_print_to_console("After Delete...")
-	list_all_task = Firebase.Storage.ref("Firebasetester").list_all()
-	await list_all_task.task_finished
-	_print_to_console(list_all_task.data)
+	await list_all_current()
 	$string_delete_check.button_pressed = true
 	
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED STORAGE TESTS")
 	_test_finished()
 
+func list_all_current() -> void:
+	var list_all = await Firebase.Storage.ref("Firebasetester").list_all()
+	_print_to_console(list_all)
+
 # Function used to the the image data for a file an image file storage
 func get_image(requested_image):
-	return Firebase.Storage.ref("Firebasetester/upload/{image}".format({image = requested_image})).get_data()
+	return await Firebase.Storage.ref("Firebasetester/upload/{image}".format({image = requested_image})).get_data()
 
 # Fucntion used to convert the data to an image
-func task2image(task : StorageTask) -> ImageTexture:
+func variant2image(vari : Variant) -> ImageTexture:
 	var new_image := Image.new()
-	match typeof(task.data):
+	print(vari)
+	match typeof(vari):
 		TYPE_PACKED_BYTE_ARRAY:
-			var data : PackedByteArray = task.data
+			var data : PackedByteArray = vari
 			if data.size()>1:
 				var image_marker = data.slice(0, 1)
 				var hex = image_marker.hex_encode()
@@ -182,7 +163,7 @@ func task2image(task : StorageTask) -> ImageTexture:
 					"89": # This apparently had to change as we were getting corrupt data
 						new_image.load_png_from_buffer(data)
 		TYPE_DICTIONARY:
-			_print_to_console_error("ERROR %s: could not find image requested" % task.data.error.code)
+			_print_to_console_error("ERROR %s: could not find image requested" % vari)
 	var new_texture := ImageTexture.new()
 	new_texture.create_from_image(new_image)
 	return new_texture
