@@ -150,7 +150,6 @@ func get_image(requested_image):
 # Fucntion used to convert the data to an image
 func variant2image(vari : Variant) -> ImageTexture:
 	var new_image := Image.new()
-	print(vari)
 	match typeof(vari):
 		TYPE_PACKED_BYTE_ARRAY:
 			var data : PackedByteArray = vari

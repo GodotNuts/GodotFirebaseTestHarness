@@ -64,26 +64,16 @@ var root : StorageReference
 ## The Storage API that created this [StorageReference] to begin with.
 var storage # FirebaseStorage (Can't static type due to cyclic reference)
 
-## @default false
-## Whether this [StorageReference] is valid. None of the functions will work when in an invalid state.
-## It is set to false when [method delete] is called.
-var valid : bool = false
-
 ## @args path
 ## @return StorageReference
 ## Returns a reference to another [StorageReference] relative to this one.
 func child(path : String) -> StorageReference:
-	if not valid:
-		return null
 	return storage.ref(full_path.path_join(path))
 
 ## @args data, metadata
 ## @return int
 ## Makes an attempt to upload data to the referenced file location. Returns Variant
 func put_data(data : PackedByteArray, metadata := {}) -> Variant:
-	if not valid:
-		return Error.FAILED
-		
 	if not "Content-Length" in metadata and not Utilities.is_web():
 		metadata["Content-Length"] = data.size()
 
@@ -115,8 +105,6 @@ func put_file(file_path : String, metadata := {}) -> Variant:
 ## @return Variant
 ## Makes an attempt to download the files from the referenced file location. Status checked this task is found in the returned [StorageTask].
 func get_data() -> Variant:
-	if not valid:
-		return null
 	var result = await storage._download(self, false, false)
 	return result
 
@@ -130,23 +118,17 @@ func get_string() -> String:
 ## @return StorageTask
 ## Attempts to get the download url that points to the referenced file's data. Using the url directly may require an authentication header. Status checked this task is found in the returned [StorageTask].
 func get_download_url() -> Variant:
-	if not valid:
-		return null
 	return await storage._download(self, false, true)
 
 ## @return StorageTask
 ## Attempts to get the metadata of the referenced file. Status checked this task is found in the returned [StorageTask].
 func get_metadata() -> Variant:
-	if not valid:
-		return null
 	return await storage._download(self, true, false)
 
 ## @args metadata
 ## @return StorageTask
 ## Attempts to update the metadata of the referenced file. Any field with a value of [code]null[/code] will be deleted checked the server end. Status checked this task is found in the returned [StorageTask].
 func update_metadata(metadata : Dictionary) -> Variant:
-	if not valid:
-		return null
 	var data := JSON.stringify(metadata).to_utf8_buffer()
 	var headers := PackedStringArray(["Accept: application/json"])
 	return await storage._upload(data, headers, self, true)
@@ -154,28 +136,20 @@ func update_metadata(metadata : Dictionary) -> Variant:
 ## @return StorageTask
 ## Attempts to get the list of files and/or folders under the referenced folder This function is not nested unlike [method list_all]. Status checked this task is found in the returned [StorageTask].
 func list() -> Array:
-	if not valid:
-		return []
 	return await storage._list(self, false)
 
 ## @return StorageTask
 ## Attempts to get the list of files and/or folders under the referenced folder This function is nested unlike [method list]. Status checked this task is found in the returned [StorageTask].
 func list_all() -> Array:
-	if not valid:
-		return []
 	return await storage._list(self, true)
 
 ## @return StorageTask
 ## Attempts to delete the referenced file/folder. If successful, the reference will become invalid And can no longer be used. If you need to reference this location again, make a new reference with [method StorageTask.ref]. Status checked this task is found in the returned [StorageTask].
 func delete() -> bool:
-	if not valid:
-		return false
 	return await storage._delete(self)
 
 func _to_string() -> String:
 	var string := "gs://%s/%s" % [bucket, full_path]
-	if not valid:
-		string += " [Invalid RefCounted]"
 	return string
 
 func _on_task_finished(task : StorageTask, action : String) -> void:

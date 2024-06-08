@@ -123,7 +123,6 @@ func ref(path := "") -> StorageReference:
 	if not _references.has(path):
 		var ref := StorageReference.new()
 		_references[path] = ref
-		ref.valid = true
 		ref.bucket = bucket
 		ref.full_path = path
 		ref.file_name = path.get_file()
@@ -223,7 +222,9 @@ func _delete(ref : StorageReference) -> bool:
 	task._url = _get_file_url(ref)
 	task.action = StorageTask.Task.TASK_DELETE
 	_process_request(task)
-	return (await task.task_finished) == null
+	var data = await task.task_finished
+	
+	return data == null
 
 func _process_request(task : StorageTask) -> void:
 	if requesting:
@@ -260,7 +261,10 @@ func _finish_request(result : int) -> void:
 
 		StorageTask.Task.TASK_DELETE:
 			_references.erase(task.ref.full_path)
-			task.ref.valid = false
+			for child in get_children():
+				if child.full_path == task.ref.full_path:
+					child.queue_free()
+					break
 			if typeof(task.data) == TYPE_PACKED_BYTE_ARRAY:
 				task.data = null
 
