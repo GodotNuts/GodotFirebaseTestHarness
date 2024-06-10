@@ -14,7 +14,7 @@ const _password : String = 'Password1234'
 
 var listener_test_count := 0
 
-var DefaultDocument = { 'name': 'Document1', 'points': 20, 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 }
+var DefaultDocument = { 'name': 'Document1', 'points': 20, 'crud': { 'something': 'other thing', 'main': { 'info' : 8 }}, 'active': 'true', "server_timestamp_attempt": null, "increment_field": 0, "decrement_field": 0, "max_field": 5, "min_field": 2 }
 
 # Function called when the scene is ready
 func _ready():
@@ -85,7 +85,11 @@ func _test_firestore() -> void:
 	_print_to_console("Trying to add a document")
 	_document = await _collection.add("Document1", DefaultDocument)
 	$add_document.button_pressed = true
-	#
+	
+	_print_to_console("Printing crud")
+	var value = _document.get_value('crud')
+	_print_to_console(value)
+	
 	## Get Document1 (Document that has been added from the previous step)
 	_print_to_console("Trying to get Document1")
 	_document = await _collection.get_doc('Document1')
