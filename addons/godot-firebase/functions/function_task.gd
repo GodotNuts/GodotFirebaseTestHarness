@@ -30,9 +30,6 @@ signal task_error(code, status, message)
 var data: Dictionary
 var error: Dictionary
 
-## Whether the data came from cache.
-var from_cache : bool = false
-
 var _response_headers : PoolStringArray = PoolStringArray()
 var _response_code : int = 0
 
@@ -42,30 +39,17 @@ var _fields : String = ""
 var _headers : PoolStringArray = []
 
 func _on_request_completed(result : int, response_code : int, headers : PoolStringArray, body : PoolByteArray) -> void:
-    var bod
-    if validate_json(body.get_string_from_utf8()).empty():
-        bod = JSON.parse(body.get_string_from_utf8()).result
-    else:
-        bod = {content = body.get_string_from_utf8()}
+	var bod
+	if validate_json(body.get_string_from_utf8()).empty():
+		bod = JSON.parse(body.get_string_from_utf8()).result
+	else:
+		bod = {content = body.get_string_from_utf8()}
 
-    var offline: bool = typeof(bod) == TYPE_NIL
-    from_cache = offline
+	data = bod
+	if response_code == HTTPClient.RESPONSE_OK and data != null:
+		emit_signal("function_executed", result, data)
+	else:
+		error = {result=result, response_code=response_code, data=data}
+		emit_signal("task_error", result, response_code, str(data))
 
-    data = bod
-    if response_code == HTTPClient.RESPONSE_OK and data!=null:
-        emit_signal("function_executed", result, data)
-    else:
-        error = {result=result, response_code=response_code, data=data}
-        emit_signal("task_error", result, response_code, str(data))
-
-    emit_signal("task_finished", data)
-
-#
-#func _handle_cache(offline : bool, data, encrypt_key : String, cache_path : String, body) -> Dictionary:
-#    if offline:
-#        Firebase._printerr("Offline queries are currently unsupported!")
-#
-#    if not offline:
-#        return body
-#    else:
-#        return body_return
+	emit_signal("task_finished", data)

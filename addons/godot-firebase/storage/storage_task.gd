@@ -6,15 +6,15 @@ class_name StorageTask
 extends Reference
 
 enum Task {
-    TASK_UPLOAD,
-    TASK_UPLOAD_META,
-    TASK_DOWNLOAD,
-    TASK_DOWNLOAD_META,
-    TASK_DOWNLOAD_URL,
-    TASK_LIST,
-    TASK_LIST_ALL,
-    TASK_DELETE,
-    TASK_MAX ## The number of [enum Task] constants.
+	TASK_UPLOAD,
+	TASK_UPLOAD_META,
+	TASK_DOWNLOAD,
+	TASK_DOWNLOAD_META,
+	TASK_DOWNLOAD_URL,
+	TASK_LIST,
+	TASK_LIST_ALL,
+	TASK_DELETE,
+	TASK_MAX ## The number of [enum Task] constants.
 }
 
 ## Emitted when the task is finished. Returns data depending on the success and action of the task.
@@ -61,13 +61,13 @@ var _url : String = ""
 var _headers : PoolStringArray = PoolStringArray()
 
 func set_action(value : int) -> void:
-    action = value
-    match action:
-        Task.TASK_UPLOAD:
-            _method = HTTPClient.METHOD_POST
-        Task.TASK_UPLOAD_META:
-            _method = HTTPClient.METHOD_PATCH
-        Task.TASK_DELETE:
-            _method = HTTPClient.METHOD_DELETE
-        _:
-            _method = HTTPClient.METHOD_GET
+	action = value
+	match action:
+		Task.TASK_UPLOAD:
+			_method = HTTPClient.METHOD_POST
+		Task.TASK_UPLOAD_META:
+			_method = HTTPClient.METHOD_PATCH
+		Task.TASK_DELETE:
+			_method = HTTPClient.METHOD_DELETE
+		_:
+			_method = HTTPClient.METHOD_GET
