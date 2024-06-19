@@ -146,10 +146,10 @@ func _test_firestore() -> void:
 	## Query Collection
 	_print_to_console("\nRunning Firestore Query")
 	var query : FirestoreQuery = FirestoreQuery.new()
-	query.from("Firebasetester")
-	query.where("points", FirestoreQuery.OPERATOR.GREATER_THAN, 5)
+	query.from("Firebasetester", false)
 	query.order_by("points", FirestoreQuery.DIRECTION.DESCENDING)
-	query.limit(10)
+	query.where("points", FirestoreQuery.OPERATOR.GREATER_THAN, 5)
+	query.limit(1)
 	var result = await Firebase.Firestore.query(query)
 	_print_to_console(result)
 	$run_query.button_pressed = true
