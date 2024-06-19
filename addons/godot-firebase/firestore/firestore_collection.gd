@@ -10,7 +10,7 @@ extends Reference
 signal add_document(doc)
 signal get_document(doc)
 signal update_document(doc)
-signal delete_document()
+signal delete_document(result)
 signal error(code,status,message)
 
 const _AUTHORIZATION_HEADER : String = "Authorization: Bearer "
@@ -136,8 +136,8 @@ func _on_add_document(document : FirestoreDocument):
 func _on_update_document(document : FirestoreDocument):
 	emit_signal("update_document", document )
 
-func _on_delete_document():
-	emit_signal("delete_document")
+func _on_delete_document(result):
+	emit_signal("delete_document", result)
 
 func _on_error(code, status, message, task):
 	emit_signal("error", code, status, message)
