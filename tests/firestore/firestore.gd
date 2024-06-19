@@ -132,7 +132,7 @@ func _test_firestore() -> void:
 	# Delete Document1 from Firestore
 	_print_to_console("Trying to delete Doucment1")
 	var del_task : FirestoreTask = _collection.delete("Document1")
-	_document = yield(del_task, "delete_document")
+	var del_result = yield(del_task, "delete_document")
 	$delete_document.pressed = true
 
 	# Query Collection
