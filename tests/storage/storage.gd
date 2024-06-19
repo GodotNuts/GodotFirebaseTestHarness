@@ -15,9 +15,9 @@ func _ready():
 	Firebase.Auth.connect("login_succeeded", self, "_on_FirebaseAuth_login_succeeded")
 	Firebase.Auth.connect("login_failed", self, "_on_login_failed")
 
-# Function called when the test starts 
+# Function called when the test starts
 # Clears all checkboxes to clean the GUI
-# Disbales all buttons in the GUI to allow the test to run uninterupted 
+# Disbales all buttons in the GUI to allow the test to run uninterupted
 func _test_started() -> void:
 	_test_running = true
 	var checkboxes = get_tree().get_nodes_in_group('tests')
@@ -56,13 +56,13 @@ func _on_test_storage_pressed():
 func _test_storage():
 	# Print to the console GUI that the test is starting
 	_print_to_console("STARTING STORAGE TESTS")
-	
+
 	# Upload test image to Storage
 	_print_to_console("Trying to Upload image...")
 	var upload_task = Firebase.Storage.ref("Firebasetester/upload/image.png").put_file("res://assets/image.png")
 	yield(upload_task, "task_finished")
 	$upload_image_check.pressed = true
-	
+
 	# Download image and display it in the GUi for the end user
 	_print_to_console("\nTrying to download image and display it...")
 	var image = get_image('image.png')
@@ -70,21 +70,21 @@ func _test_storage():
 	var converted_image = task2image(image)
 	$image.texture = converted_image
 	$download_image_check.pressed = true
-	
+
 	# Get download URL for the image and display it in the GUI to the end user
 	_print_to_console("\nTrying to get download URL...")
 	var url_task = Firebase.Storage.ref("Firebasetester/upload/image.png").get_download_url()
 	yield(url_task, "task_finished")
 	_print_to_console(url_task.data)
 	$image_url_check.pressed = true
-	
+
 	# Get the metadata for the image and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
 	var meta_task = Firebase.Storage.ref("Firebasetester/upload/image.png").get_metadata()
 	yield(meta_task, "task_finished")
 	_print_to_console(meta_task.data)
 	$image_meta_check.pressed = true
-	
+
 	# Delete the test image from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
@@ -98,20 +98,20 @@ func _test_storage():
 	yield(list_all_task, "task_finished")
 	_print_to_console(list_all_task.data)
 	$image_delete_check.pressed = true
-	
+
 	# Upload test document to Storage
 	_print_to_console("\nTrying to upload file")
 	upload_task = Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").put_file("res://assets/dummy.pdf")
 	yield(upload_task, "task_finished")
 	$upload_document_check.pressed = true
-	
+
 	# Get the metadata for the document and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
 	meta_task = Firebase.Storage.ref("Firebasetester/upload/dummy.pdf").get_metadata()
 	yield(meta_task, "task_finished")
 	_print_to_console(meta_task.data)
 	$document_meta_check.pressed = true
-	
+
 	# Delete the test document from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
@@ -125,26 +125,26 @@ func _test_storage():
 	yield(list_all_task, "task_finished")
 	_print_to_console(list_all_task.data)
 	$document_delete_check.pressed = true
-	
+
 	# Upload string to Storage
 	_print_to_console("\nTrying to write a string...")
 	upload_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").put_string("Test", {})
 	yield(upload_task, "task_finished")
 	$upload_string_check.pressed = true
-	
+
 	# Add metadata to the string
 	_print_to_console("\nTrying to add metadata to it...")
 	meta_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").update_metadata({"Test": "This is a Test", "SillyData": "We got it"})
 	yield(meta_task, "task_finished")
 	$string_add_meta_check.pressed = true
-	
+
 	# Get the metadata for the string and display it in the GUI to the end user
 	_print_to_console("\nTrying to get the metadata...")
 	meta_task = Firebase.Storage.ref("Firebasetester/upload/junkdata").get_metadata()
 	yield(meta_task, "task_finished")
 	_print_to_console(meta_task.data)
 	$string_meta_check.pressed = true
-	
+
 	# Delete the test string from Storage
 	_print_to_console("\nTrying to delete file...")
 	_print_to_console("Before Delete...")
@@ -158,7 +158,7 @@ func _test_storage():
 	yield(list_all_task, "task_finished")
 	_print_to_console(list_all_task.data)
 	$string_delete_check.pressed = true
-	
+
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED STORAGE TESTS")
 	_test_finished()

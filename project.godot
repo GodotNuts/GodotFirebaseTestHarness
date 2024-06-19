@@ -9,6 +9,16 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "AuthProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/auth_provider.gd"
+}, {
+"base": "AuthProvider",
+"class": "FacebookProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/facebook.gd"
+}, {
 "base": "HTTPRequest",
 "class": "FirebaseAuth",
 "language": "GDScript",
@@ -84,6 +94,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://addons/godot-firebase/functions/function_task.gd"
 }, {
+"base": "AuthProvider",
+"class": "GitHubProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/github.gd"
+}, {
+"base": "AuthProvider",
+"class": "GoogleProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/google.gd"
+}, {
 "base": "Reference",
 "class": "StorageReference",
 "language": "GDScript",
@@ -93,8 +113,20 @@ _global_script_classes=[ {
 "class": "StorageTask",
 "language": "GDScript",
 "path": "res://addons/godot-firebase/storage/storage_task.gd"
+}, {
+"base": "AuthProvider",
+"class": "TwitterProvider",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/auth/providers/twitter.gd"
+}, {
+"base": "Reference",
+"class": "Utilities",
+"language": "GDScript",
+"path": "res://addons/godot-firebase/Utilities.gd"
 } ]
 _global_script_class_icons={
+"AuthProvider": "",
+"FacebookProvider": "",
 "FirebaseAuth": "",
 "FirebaseDatabase": "",
 "FirebaseDatabaseReference": "",
@@ -110,8 +142,12 @@ _global_script_class_icons={
 "FirestoreQuery": "",
 "FirestoreTask": "",
 "FunctionTask": "",
+"GitHubProvider": "",
+"GoogleProvider": "",
 "StorageReference": "",
-"StorageTask": ""
+"StorageTask": "",
+"TwitterProvider": "",
+"Utilities": ""
 }
 
 [application]

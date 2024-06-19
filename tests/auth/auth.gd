@@ -21,9 +21,9 @@ func _ready():
 	Firebase.Auth.connect("login_failed", self, "_on_login_failed")
 	Firebase.Auth.connect("userdata_received", self, "_on_userdata_received")
 
-# Function called when the test starts 
+# Function called when the test starts
 # Clears all checkboxes to clean the GUI
-# Disbales all buttons in the GUI to allow the test to run uninterupted 
+# Disbales all buttons in the GUI to allow the test to run uninterupted
 func _test_started() -> void:
 	_test_running = true
 	var checkboxes = get_tree().get_nodes_in_group('tests')
@@ -45,33 +45,33 @@ func _on_test_auth_pressed() -> void:
 	# Print to the console GUI that the test is starting
 	_print_to_console("STARTING AUTH TESTS")
 	_test_started()
-	
+
 	# Start signup test using the fist email
 	if _auth_error != true:
 		_print_to_console("\nTrying to signup...")
 		Firebase.Auth.signup_with_email_and_password(_email1, _password1)
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Start Login test using the first email
 	if _auth_error != true:
 		$signup_check.pressed = true
 		_print_to_console("\nTrying to login...")
 		Firebase.Auth.login_with_email_and_password(_email1, _password1)
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Check Auth File
 	if _auth_error != true:
 		$login_check.pressed = true
 		_check_auth_file()
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Get User Data Test
 	if _auth_error != true:
 		$auth_file_check.pressed = true
 		_print_to_console("\nTrying to get user data...")
 		Firebase.Auth.get_user_data()
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Change User Password
 	if _auth_error != true:
 		$user_data_check.pressed = true
@@ -82,7 +82,7 @@ func _on_test_auth_pressed() -> void:
 		yield(get_tree().create_timer(_timer_length), "timeout")
 		Firebase.Auth.login_with_email_and_password(_email1, _password2)
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Change the user email from the first email to the second email
 	if _auth_error != true:
 		$change_pass_check.pressed = true
@@ -93,20 +93,20 @@ func _on_test_auth_pressed() -> void:
 		yield(get_tree().create_timer(_timer_length), "timeout")
 		Firebase.Auth.login_with_email_and_password(_email2, _password2)
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Login with the new credentials
 	if _auth_error != true:
 		$change_email_check.pressed = true
 		_print_to_console("\nTrying to login with new creds...")
 		Firebase.Auth.login_with_email_and_password(_email2, _password2)
 		yield(get_tree().create_timer(_timer_length), "timeout")
-	
+
 	# Start Delete Account test
 	if _auth_error != true:
 		$login_check_2.pressed = true
 		_print_to_console("\nDeleting Account...")
 		Firebase.Auth.delete_user_account()
-		
+
 	# If nothing has failed to this point, finish the test successfully
 	if _auth_error != true:
 		$delete_check.pressed = true

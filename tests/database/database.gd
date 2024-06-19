@@ -17,9 +17,9 @@ func _ready():
 	Firebase.Auth.connect("login_succeeded", self, "_on_FirebaseAuth_login_succeeded")
 	Firebase.Auth.connect("login_failed", self, "_on_login_failed")
 
-# Function called when the test starts 
+# Function called when the test starts
 # Clears all checkboxes to clean the GUI
-# Disbales all buttons in the GUI to allow the test to run uninterupted 
+# Disbales all buttons in the GUI to allow the test to run uninterupted
 func _test_started() -> void:
 	_test_running = true
 	var checkboxes = get_tree().get_nodes_in_group('tests')
@@ -56,30 +56,30 @@ func _on_test_database_pressed():
 func _test_database():
 	# Print to the console GUI that the test is starting
 	_print_to_console("STARTING DATABASE TESTS")
-	
+
 	# Get the database reference that we will be working with
 	_print_to_console("\nGetting the Databse Reference...")
 	database_reference = Firebase.Database.get_database_reference("FirebaseTester/data", { })
 	$get_ref_check.pressed = true
-	
+
 	# Connect to signals needed for testing
 	_print_to_console("\nConnecting signals for the RTD...")
 	database_reference.connect("new_data_update", self, "_on_new_data_update") # for new data
 	database_reference.connect("patch_data_update", self, "_on_patch_data_update") # for patch data
 	database_reference.connect("push_failed", self, "_on_push_failed")
 	database_reference.connect("push_successful", self, "_on_push_successful")
-	
+
 	# Push data to the RTDB
 	_print_to_console("\nTrying to push data to the RTD...")
 	database_reference.push({'user_name':'username', 'message':'Hello world!'})
 	$push_data_check.pressed = true
 	yield(get_tree().create_timer(3), "timeout")
-	
+
 	# Update data in the RTDB
 	_print_to_console("\nTrying to update the DB")
 	database_reference.update(added_data_key, {'user_name':'username', 'message':'Hello world123!'})
 	$update_data_check.pressed = true
-	
+
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED DATABASE TESTS")
 	_test_finished()

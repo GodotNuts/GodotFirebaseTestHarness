@@ -18,9 +18,9 @@ func _ready():
 	Firebase.Auth.connect("login_succeeded", self, "_on_FirebaseAuth_login_succeeded")
 	Firebase.Auth.connect("login_failed", self, "_on_login_failed")
 
-# Function called when the test starts 
+# Function called when the test starts
 # Clears all checkboxes to clean the GUI
-# Disbales all buttons in the GUI to allow the test to run uninterupted 
+# Disbales all buttons in the GUI to allow the test to run uninterupted
 func _test_started() -> void:
 	_test_running = true
 	var checkboxes = get_tree().get_nodes_in_group('tests')
@@ -65,22 +65,22 @@ func _on_test_links_pressed():
 func _test_links():
 	# Print to the console GUI that the test is starting
 	_print_to_console("STARTING LINKS TESTS")
-	
+
 	# Connect to signals needed for testing
 	Firebase.DynamicLinks.connect("dynamic_link_generated", self, "print_link")
-	
+
 	# Generate 'Unguessable Link'
 	_print_to_console("\nTrying to generate an unguessable link...")
 	Firebase.DynamicLinks.generate_dynamic_link(link_to_test, "", "", true)
 	yield(self, 'link_printed')
 	$unguessable_link_check.pressed = true
-	
+
 	# Generate 'Guessable Link'
 	_print_to_console("\nTrying to generate an guessable link...")
 	Firebase.DynamicLinks.generate_dynamic_link(link_to_test, "", "", false)
 	yield(self, 'link_printed')
 	$guessable_link_check.pressed = true
-	
+
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED LINKS TESTS")
 	_test_finished()

@@ -8,7 +8,7 @@ onready var console = $console
 var _collection : FirestoreCollection
 var _document : FirestoreDocument
 
-# Constants 
+# Constants
 const _email : String = 'testaccount@godotnuts.test'
 const _password : String = 'Password1234'
 
@@ -17,9 +17,9 @@ func _ready():
 	Firebase.Auth.connect("login_succeeded", self, "_on_FirebaseAuth_login_succeeded")
 	Firebase.Auth.connect("login_failed", self, "_on_login_failed")
 
-# Function called when the test starts 
+# Function called when the test starts
 # Clears all checkboxes to clean the GUI
-# Disbales all buttons in the GUI to allow the test to run uninterupted 
+# Disbales all buttons in the GUI to allow the test to run uninterupted
 func _test_started() -> void:
 	_test_running = true
 	var checkboxes = get_tree().get_nodes_in_group('tests')
@@ -40,6 +40,19 @@ func _test_finished() -> void:
 func _test_error(data) -> void:
 	_print_to_console_error(data)
 	_test_finished()
+
+func _cleanup_previous_run():
+	var param_reducer = Utilities.SignalParamReducerWithResults.new(_collection, "get_document", 1)
+	var param_reducer2 = Utilities.SignalParamReducerWithResults.new(_collection, "error", 3)
+	var multi_await = Utilities.MultiAwaitSignalWithResults.new()
+	multi_await.add_signal(param_reducer, "completed")
+	multi_await.add_signal(param_reducer2, "completed")
+	var doc = _collection.get("Document1")
+	var previous_run = yield(multi_await, "completed")
+	if previous_run != null and previous_run.size() > 0 and not previous_run[0].has("2"):
+		var deleted = yield(_collection.delete(previous_run[0]["1"].doc_name), "task_finished")
+		if deleted:
+			_print_to_console("Document1 deleted")
 
 # Function called when login to Firebase has completed successfully
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
@@ -64,24 +77,26 @@ func _on_test_firestore_pressed():
 func _test_firestore() -> void:
 	# Print to the console GUI that the test is starting
 	_print_to_console("\nSTARTING FIRESTORE TESTS")
-	
+
 	# Connect to the test collection
 	_print_to_console("\nConnecting to collection 'Firebasetester'")
 	_collection = Firebase.Firestore.collection('Firebasetester')
-	
+
 	# Connect to signals needed for testing
 	_collection.connect("add_document", self, "on_document_add")
 	_collection.connect("get_document", self, "on_document_get")
 	_collection.connect("update_document", self, "on_document_update")
 	_collection.connect("delete_document", self, "on_document_delete")
 	_collection.connect("error", self, "on_document_error")
-	
+
+	yield(_cleanup_previous_run(), "completed")
+
 	# Add Document1 to Firestore
 	_print_to_console("Trying to add a document")
 	var add_task : FirestoreTask = _collection.add("Document1", {'name': 'Document1', 'active': 'true'})
 	_document = yield(add_task, "add_document")
 	$add_document.pressed = true
-	
+
 	# Get Document1 (Document that has been added from the previous step)
 	_print_to_console("Trying to get 'Document1")
 	_collection.get('Document1')
@@ -91,35 +106,35 @@ func _test_firestore() -> void:
 		return
 	else:
 		$get_document.pressed = true
-	
+
 	# Print Document1 to the console GUI
 	_print_to_console("Trying to print contents of Document1")
 	_print_to_console(_document)
 	$print_document.pressed = true
-	
+
 	# Update Document1
 	_print_to_console("Trying to update Document1")
 	var up_task : FirestoreTask = _collection.update("Document1", {'name': 'Document1', 'active': 'true', 'updated' : 'true'})
 	_document = yield(up_task, "update_document")
 	$update_document.pressed = true
-	
+
 	# Get Document1 (With updated that has been added from the previous step)
 	_print_to_console("Trying to get 'Document1")
 	_collection.get('Document1')
 	_document = yield(_collection, "get_document")
 	$get_document_2.pressed = true
-	
+
 	# Print Document1 to the console GUI
 	_print_to_console("Trying to print contents of Document1")
 	_print_to_console(_document)
 	$print_document_2.pressed = true
-	
+
 	# Delete Document1 from Firestore
 	_print_to_console("Trying to delete Doucment1")
 	var del_task : FirestoreTask = _collection.delete("Document1")
 	_document = yield(del_task, "delete_document")
 	$delete_document.pressed = true
-	
+
 	# Query Collection
 	_print_to_console("\nRunning Firestore Query")
 	var query : FirestoreQuery = FirestoreQuery.new()
@@ -131,7 +146,7 @@ func _test_firestore() -> void:
 	var result = yield(query_task, "task_finished")
 	_print_to_console(result)
 	$run_query.pressed = true
-	
+
 	# If nothing has failed to this point, finish the test successfully
 	_print_to_console("\nFINISHED FIRESTORE TESTS")
 	_test_finished()
