@@ -132,6 +132,8 @@ func _test_firestore() -> void:
 	query.order_by("points", FirestoreQuery.DIRECTION.DESCENDING)
 	query.limit(10)
 	var result = yield(Firebase.Firestore.query(query), "completed")
+	for doc_value in result:
+		print(typeof(doc_value.get_value("points")))
 	_print_to_console(result)
 	$run_query.pressed = true
 
