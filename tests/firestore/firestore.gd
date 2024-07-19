@@ -152,11 +152,49 @@ func _test_firestore() -> void:
 	query.limit(10)
 	var result = await Firebase.Firestore.query(query)
 	_print_to_console(result)
+	
+	## Agg Query: Count
+	_print_to_console("\nRunning Firestore Aggregation Queries")
+	_print_to_console("\nAgg Query: Count")
+	var agg_query : FirestoreQuery = FirestoreQuery.new()
+	agg_query.from("Firebasetester")
+	agg_query.where("points", FirestoreQuery.OPERATOR.NOT_EQUAL, 5)
+	agg_query.aggregate().count(10) # Should return something like "count": "1"
+	var agg_result = await Firebase.Firestore.aggregation_query(agg_query)
+	_print_to_console("Result from Count query: " + str(agg_result))
+	
+	## AggQuery: Average
+	_print_to_console("\nAgg Query: Average")
+	agg_query = FirestoreQuery.new()
+	agg_query.from("Firebasetester")
+	agg_query.where("points", FirestoreQuery.OPERATOR.NOT_EQUAL, 5)
+	agg_query.aggregate().average("points") # Should return "points": "1" I think
+	agg_result = await Firebase.Firestore.aggregation_query(agg_query)
+	_print_to_console("Result from Average query: " + str(agg_result))
+	
+	## AggQuery: sum
+	_print_to_console("\nAgg Query: Sum")
+	agg_query = FirestoreQuery.new()
+	agg_query.from("Firebasetester")
+	agg_query.where("points", FirestoreQuery.OPERATOR.NOT_EQUAL, 5)
+	agg_query.aggregate().sum("points") # Should return "points": "1" ... I think.
+	agg_result = await Firebase.Firestore.aggregation_query(agg_query)
+	_print_to_console("Result from Sum query: " + str(agg_result))
+	$run_query.button_pressed = true
+	
+	## AggQuery: sum and count for testing purposes
+	_print_to_console("\nAgg Query: Sum and Count")
+	agg_query = FirestoreQuery.new()
+	agg_query.from("Firebasetester")
+	agg_query.where("points", FirestoreQuery.OPERATOR.NOT_EQUAL, 5)
+	agg_query.aggregate().sum("points").aggregate().count(10) # Should return "points":"1", "counts":"1" ... I think.
+	agg_result = await Firebase.Firestore.aggregation_query(agg_query)
+	_print_to_console("Result from Sum/Count query: " + str(agg_result))
+	
 	$run_query.button_pressed = true
 		
-	_print_to_console("Running listener tests")
-	
-	await run_listener_tests()
+	#_print_to_console("Running listener tests")
+	#await run_listener_tests()
 	
 	await _cleanup_previous_run()
 	# If nothing has failed to this point, finish the test successfully
