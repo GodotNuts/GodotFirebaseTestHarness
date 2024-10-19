@@ -19,6 +19,10 @@ config/icon="res://icon.png"
 
 Firebase="*res://addons/godot-firebase/firebase/firebase.tscn"
 
+[display]
+
+window/dpi/allow_hidpi=false
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg")

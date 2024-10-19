@@ -90,6 +90,14 @@ func _test_firestore() -> void:
 	var value = _document.get_value('crud')
 	_print_to_console(value)
 	
+	_print_to_console("Printing crud with dictionary getter")
+	var value2 = _document['crud']
+	_print_to_console(value2)
+	
+	_print_to_console("Setting crud value with dictionary setter")
+	_document['crud'] = "new crud"
+	_print_to_console("New crud: " + _document['crud'])
+		
 	## Get Document1 (Document that has been added from the previous step)
 	_print_to_console("Trying to get Document1")
 	_document = await _collection.get_doc('Document1')
@@ -106,10 +114,10 @@ func _test_firestore() -> void:
 
 	#
 	## Print Document1 to the console GUI
-	_print_to_console("Trying to print contents of Document1")
-	_print_to_console(_document)
+	_print_to_console("Trying to print unsafe contents of Document1")
+	_print_to_console(_document.get_unsafe_document())
 	$print_document.button_pressed = true
-	
+
 	var timestamp_transform = ServerTimestampTransform.new(_document.doc_name, true, "server_timestamp_attempt")
 	var increment_transform = IncrementTransform.new(_document.doc_name, true, "increment_field", 2)
 	var decrement_transform = DecrementTransform.new(_document.doc_name, true, "decrement_field", 2)
