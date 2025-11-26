@@ -5,20 +5,32 @@
 [ext_resource type="Texture2D" uid="uid://dw0ssh85ig8c8" path="res://icon.png" id="3"]
 [ext_resource type="PackedScene" uid="uid://fnf1abx32uum" path="res://assets/buttons/normal_button.tscn" id="4"]
 
-[node name="main" type="Node2D"]
-script = ExtResource("1")
-
-[node name="background" type="TextureRect" parent="."]
-offset_right = 1024.0
-offset_bottom = 600.0
-texture = ExtResource("2")
-
-[node name="menu" type="VBoxContainer" parent="."]
+[node name="main" type="Control"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = 1024.0
-offset_bottom = 600.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1")
+
+[node name="background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2")
+
+[node name="menu" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -81,11 +93,23 @@ label = "Database"
 layout_mode = 2
 label = "RemoteConfig"
 
+[node name="mid3" type="VBoxContainer" parent="menu/mid"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+
+[node name="HBoxContainer3" type="HBoxContainer" parent="menu/mid/mid3"]
+layout_mode = 2
+alignment = 1
+
+
+
 [node name="bot" type="VBoxContainer" parent="menu"]
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="title" type="Label" parent="."]
+layout_mode = 0
 offset_left = 40.0
 offset_top = 49.009
 offset_right = 412.0

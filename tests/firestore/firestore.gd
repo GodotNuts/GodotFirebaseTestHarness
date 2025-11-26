@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 # Script used for testing the Firestore functions of the plugin
 
@@ -7,10 +7,15 @@ extends Node2D
 @onready var console = $console
 var _collection : FirestoreCollection
 var _document : FirestoreDocument
+var _listener
 
+# Constants 
 # Constants 
 const _email : String = 'testaccount@godotnuts.test'
 const _password : String = 'Password1234'
+
+enum TestMode { NONE, STANDARD, LIVE }
+var _current_test_mode = TestMode.NONE
 
 var listener_test_count := 0
 
@@ -31,6 +36,16 @@ func _test_started() -> void:
 		box.button_pressed = false
 	$back.disabled = true
 	$test_firestore.disabled = true
+	$back.disabled = true
+	$test_firestore.disabled = true
+	if has_node("live_listener_test"):
+		$live_listener_test.disabled = true
+	if has_node("live_controls"):
+		$live_controls.visible = _current_test_mode == TestMode.LIVE
+		
+	if _current_test_mode == TestMode.LIVE:
+		for box in checkboxes:
+			box.visible = false
 
 # Function called when the tests are finsihed
 # Re-enables all buttons in the GUI
@@ -38,6 +53,14 @@ func _test_finished() -> void:
 	_test_running = false
 	$back.disabled = false
 	$test_firestore.disabled = false
+	if has_node("live_listener_test"):
+		$live_listener_test.disabled = false
+	if has_node("live_controls"):
+		$live_controls.visible = false
+		
+	var checkboxes = get_tree().get_nodes_in_group('tests')
+	for box in checkboxes:
+		box.visible = true
 
 # Function called if there is an error in the test
 # Prints the error to the GUI console so the end user can see
@@ -56,7 +79,11 @@ func _cleanup_previous_run():
 func _on_FirebaseAuth_login_succeeded(_auth) -> void:
 	_print_to_console("Login with email and password has worked")
 	$login_check.button_pressed = true
-	await _test_firestore()
+	
+	if _current_test_mode == TestMode.STANDARD:
+		await _test_firestore()
+	elif _current_test_mode == TestMode.LIVE:
+		await _start_live_listener_test()
 
 # Function called when login to Firebase has failed
 # Ends the test and prints the error to the GUI console
@@ -68,8 +95,105 @@ func _on_login_failed(error_code, message):
 # Function called when the end user presses the 'Test Auth' button
 # Starts the test
 func _on_test_firestore_pressed():
+	_current_test_mode = TestMode.STANDARD
 	_test_started()
 	Firebase.Auth.login_with_email_and_password(_email, _password)
+
+func _on_live_listener_test_pressed():
+	_current_test_mode = TestMode.LIVE
+	_test_started()
+	Firebase.Auth.login_with_email_and_password(_email, _password)
+
+func _start_live_listener_test() -> void:
+	_print_to_console("\nSTARTING LIVE LISTENER TEST")
+	_print_to_console("Connecting to collection 'Firebasetester'...")
+	_collection = Firebase.Firestore.collection('Firebasetester')
+	
+	_print_to_console("Listening to 'LiveSyncDoc'...")
+	_document = await _collection.get_doc("LiveSyncDoc")
+	
+	if _document == null:
+		_print_to_console("Document 'LiveSyncDoc' not found, creating it...")
+		_document = await _collection.add("LiveSyncDoc", {
+			"status": "listening", 
+			"created_at": Time.get_unix_time_from_system(),
+			"last_updated": Time.get_unix_time_from_system()
+		})
+	
+	_print_to_console("Listener attached! Waiting for changes indefinitely...")
+	_print_to_console("Use the buttons on the left to modify the document.")
+	
+	_listener = _document.on_snapshot(func(changes):
+		_print_to_console("\n[LIVE UPDATE] " + Time.get_time_string_from_system())
+		if changes.has("lamport_timestamp"):
+			_print_to_console("Lamport: %d" % changes.lamport_timestamp)
+		
+		if changes.has("updated"):
+			_print_to_console("Updated: %s" % str(changes.updated))
+		if changes.has("added"):
+			_print_to_console("Added: %s" % str(changes.added))
+		if changes.has("removed"):
+			_print_to_console("Removed: %s" % str(changes.removed))
+			
+		_print_to_console("Current State: %s" % str(_document.get_unsafe_document()))
+	)
+
+func _on_add_field_pressed():
+	if _document == null: return
+	var key = "field_" + str(randi() % 1000)
+	var value = "value_" + str(randi() % 1000)
+	_print_to_console("Adding field: %s = %s" % [key, value])
+	_document.add_or_update_field(key, value)
+	await _collection.update(_document)
+
+func _on_update_field_pressed():
+	if _document == null: return
+	var keys = _document.document.keys()
+	if keys.size() == 0:
+		_print_to_console("No fields to update!")
+		return
+	
+	# Filter out metadata fields if you want, but for now just pick random
+	var key = keys[randi() % keys.size()]
+	var value = "updated_" + str(randi() % 1000)
+	_print_to_console("Updating field: %s = %s" % [key, value])
+	_document.add_or_update_field(key, value)
+	await _collection.update(_document)
+
+func _on_delete_field_pressed():
+	if _document == null: return
+	var keys = _document.document.keys()
+	if keys.size() == 0:
+		_print_to_console("No fields to delete!")
+		return
+		
+	var key = keys[randi() % keys.size()]
+	# Protect critical fields if needed, but for test let's allow deleting anything except maybe doc_name/id which aren't in document dict anyway
+	_print_to_console("Deleting field: %s" % key)
+	_document.remove_field(key)
+	await _collection.update(_document)
+
+func _on_commit_increment_pressed():
+	if not _listener:
+		print("Listener not initialized!")
+		return
+		
+	var document = await _collection.get_doc("LiveSyncDoc", true)
+	
+	var transform = IncrementTransform.new(document.doc_name, true, "counter", 1)
+	
+	document.add_field_transform(transform)
+	
+	print("Committing increment transform...")
+	var result = await _collection.commit(document)
+	print("Commit result: %s" % str(result))
+	
+	# Fetch the latest document state from Firestore to get the calculated value
+	# This will trigger the listener automatically via replace() -> _emit_changes() -> listener.send_change()
+	# document = await _collection.get_doc("LiveSyncDoc", false)
+	# var new_value = document.get_value("counter")
+	# print("New counter value from server: %s" % str(new_value))
+
 
 # Main function that is run when testing Firestore
 func _test_firestore() -> void:
@@ -201,8 +325,8 @@ func _test_firestore() -> void:
 	
 	$run_query.button_pressed = true
 		
-	#_print_to_console("Running listener tests")
-	#await run_listener_tests()
+	_print_to_console("Running listener tests")
+	await run_listener_tests()
 	
 	await _cleanup_previous_run()
 	# If nothing has failed to this point, finish the test successfully
@@ -214,14 +338,23 @@ func run_listener_tests() -> void:
 	await get_tree().create_timer(0.3).timeout
 	
 	var listener = _document.on_snapshot(
-		func(result):
-			if result.is_listener:
-				print(JSON.stringify(result, "  "))
-				, 0.1
+		func(changes):
+			_print_to_console("=== Listener Change Received ===")
+			if changes.has("lamport_timestamp"):
+				_print_to_console("Lamport Timestamp: %d" % changes.lamport_timestamp)
+			if changes.has("update_time"):
+				_print_to_console("Update Time: %.3f" % changes.update_time)
+			if changes.has("added") and changes.added and changes.added.size() > 0:
+				_print_to_console("Added: %s" % str(changes.added))
+			if changes.has("updated") and changes.updated and changes.updated.size() > 0:
+				_print_to_console("Updated: %s" % str(changes.updated))
+			if changes.has("removed") and changes.removed and changes.removed.size() > 0:
+				_print_to_console("Removed: %s" % str(changes.removed))
+			_print_to_console("Document state: %s" % str(_document.get_unsafe_document()))
+			_print_to_console("================================")
 	)
-	
-	print("Doc child count: ", _document.get_child_count(true))
-	
+
+		
 	const new_doc_name = 'NewDocument'
 	
 	_document.add_or_update_field("name", new_doc_name)
@@ -235,6 +368,7 @@ func run_listener_tests() -> void:
 	
 	_document.add_or_update_field("name", "Document1")
 	_document.remove_field("active")
+	print("Changed name locally and removed active")
 	
 	_document = await _collection.update(_document)
 	

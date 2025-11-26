@@ -7,12 +7,23 @@
 [ext_resource type="Texture2D" uid="uid://d20ruxpv04p8y" path="res://assets/buttons/normal_button_disabled.png" id="6"]
 [ext_resource type="Script" path="res://assets/buttons/normal_button.gd" id="7"]
 
-[node name="database" type="Node2D"]
+[node name="database" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 script = ExtResource("1")
 
 [node name="background" type="TextureRect" parent="."]
-offset_right = 1024.0
-offset_bottom = 600.0
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 texture = ExtResource("3")
 
 [node name="title" type="Label" parent="."]
@@ -24,11 +35,13 @@ text = "Database Tests"
 uppercase = true
 
 [node name="back" parent="." instance=ExtResource("5")]
+layout_mode = 1
 offset_right = 190.354
 offset_bottom = 44.6465
 label = "Back"
 
 [node name="test_database" type="TextureButton" parent="."]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0

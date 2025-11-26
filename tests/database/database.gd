@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 # Script used for testing the Realtime Database functions of the plugin
 signal database_call_completed
@@ -90,7 +90,7 @@ func _test_database():
 	# Get data once from the RTDB
 	_print_to_console("\n\nAttempting a once-off get from the RTD")
 	once_database_reference.once(added_data_key + "/user_name")
-	_print_to_console("Once failed")
+	_print_to_console("Once called")
 	$once_data_check.button_pressed = true
 		# Update data in the RTDB
 	_print_to_console("\nTrying to update the DB")

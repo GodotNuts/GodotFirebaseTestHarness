@@ -52,7 +52,7 @@ var _encrypt_key := "5vg76n90345f7w390346" if Utilities.is_web() else OS.get_uni
 
 
 var _base_url: String = ""
-var _extended_url: String = "projects/[PROJECT_ID]/databases/(default)/documents/"
+var _extended_url: String = "projects/{PROJECT_ID}/databases/{DATABASE_NAME}/documents/"
 var _query_suffix: String = ":runQuery"
 var _agg_query_suffix: String = ":runAggregationQuery"
 
@@ -105,7 +105,7 @@ func query(query : FirestoreQuery) -> Array:
 	var task : FirestoreTask = FirestoreTask.new()
 	task.action = FirestoreTask.Task.TASK_QUERY
 	var body: Dictionary = { structuredQuery = query.query }
-	var	url: String = _base_url + _extended_url + _query_suffix
+	var url: String = _base_url + _extended_url + query.sub_collection_path + _query_suffix
 	
 	task.data = query
 	task._fields = JSON.stringify(body)
@@ -171,8 +171,9 @@ func list(path : String = "", page_size : int = 0, page_token : String = "", ord
 func _set_config(config_json : Dictionary) -> void:
 	_config = config_json
 	_cache_loc = _config["cacheLocation"]
-	_extended_url = _extended_url.replace("[PROJECT_ID]", _config.projectId)
-
+	if _config.databaseName.is_empty():
+		_config.databaseName = "(default)"
+	_extended_url = _extended_url.format({"PROJECT_ID":_config.projectId, "DATABASE_NAME":_config.databaseName})
 	# Since caching is causing a lot of issues, I'm removing this check for now. We will revisit this in the future, once we have some time to investigate why the cache is being corrupted.
 
 	_check_emulating()

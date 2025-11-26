@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 # Script used for testing the Authentication functions of the plugin
 

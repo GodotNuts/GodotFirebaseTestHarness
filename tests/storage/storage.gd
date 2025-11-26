@@ -1,4 +1,4 @@
-extends Node2D
+extends Control
 
 # Script used for testing the Storage functions of the plugin
 
